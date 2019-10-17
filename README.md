@@ -94,7 +94,7 @@ To use, [download the JAR](https://github.com/skyscreamer/JSONassert/releases) o
         <groupId>com.zippoy</groupId>
         <artifactId>jsonassert-fastjson</artifactId>
         <version>2.0.0</version>
-	<scope>test</scope>
+	      <scope>test</scope>
     </dependency>
 
 Write tests like this:
