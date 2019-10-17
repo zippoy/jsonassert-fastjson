@@ -8,14 +8,14 @@
         <version>7</version>
     </parent>
 
-    <groupId>org.skyscreamer</groupId>
-    <artifactId>jsonassert</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <groupId>com.zippoy</groupId>
+    <artifactId>jsonassert-fastjson</artifactId>
+    <version>1.5.0</version>
     <packaging>jar</packaging>
 
-    <name>JSONassert</name>
+    <name>jsonassert-fastjson</name>
     <description>A library to develop RESTful but flexible APIs</description>
-    <url>https://github.com/skyscreamer/JSONassert</url>
+    <url>https://github.com/zippoy/jsonassert-fastjson</url>
 
     <licenses>
         <license>
@@ -25,9 +25,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git@github.com:skyscreamer/JSONassert.git</connection>
-        <developerConnection>scm:git:git@github.com:skyscreamer/JSONassert.git</developerConnection>
-        <url>git@github.com:skyscreamer/JSONassert.git</url>
+        <connection>scm:git:git@github.com:zippoy/jsonassert-fastjson.git</connection>
+        <developerConnection>scm:git:git@github.com:zippoy/jsonassert-fastjson.git</developerConnection>
+        <url>git@github.com:zippoy/jsonassert-fastjson.git</url>
     </scm>
     <developers>
         <developer>
@@ -45,14 +45,19 @@
             <name>Solomon Duskis</name>
             <email>solomon@skyscreamer.org</email>
         </developer>
+        <developer>
+            <id>zippoy</id>
+            <name>zippoy</name>
+            <email>zippoy@mail.com</email>
+        </developer>
     </developers>
 
     <!-- For JSONAssert -->
     <dependencies>
         <dependency>
-            <groupId>com.vaadin.external.google</groupId>
-            <artifactId>android-json</artifactId>
-            <version>0.0.20131108.vaadin1</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.61</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -72,6 +77,47 @@
                     <source>1.6</source>
                     <target>1.6</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>oss_release</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>oss_snapshot</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <charset>UTF-8</charset>
+                    <docencoding>UTF-8</docencoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <additionalJOption>-Xdoclint:none</additionalJOption>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -110,34 +156,55 @@
     <distributionManagement>
         <site>
             <id>github-project-site</id>
-            <url>gitsite:git@github.com/skyscreamer/JSONassert.git</url>
+            <url>gitsite:git@github.com/zippoy/jsonassert-fastjson.git</url>
         </site>
     </distributionManagement>
 
     <profiles>
         <profile>
-            <id>release-sign-artifacts</id>
+            <id>oss_release</id>
             <activation>
                 <property>
                     <name>performRelease</name>
                     <value>true</value>
                 </property>
             </activation>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>oss_snapshot</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>oss_release</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                </repository>
+            </distributionManagement>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.1</version>
+                        <version>1.6</version>
                         <executions>
                             <execution>
-                                <id>sign-artifacts</id>
+                                <id>oss_release</id>
                                 <phase>verify</phase>
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.3</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>oss_release</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
