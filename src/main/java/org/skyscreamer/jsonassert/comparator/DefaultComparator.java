@@ -10,15 +10,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert.comparator;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONCompareResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.allJSONObjects;
 import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.allSimpleValues;
@@ -31,8 +34,23 @@ public class DefaultComparator extends AbstractComparator {
 
     JSONCompareMode mode;
 
+    /**
+     * need ignore path list
+     */
+    List<String> ignorePathList;
+
     public DefaultComparator(JSONCompareMode mode) {
+        this(mode, new ArrayList(0));
+    }
+
+    public DefaultComparator(JSONCompareMode mode, List<String> ignorePathList) {
         this.mode = mode;
+        this.ignorePathList = ignorePathList;
+    }
+
+    @Override
+    public List<String> getIgnorePathList() {
+        return ignorePathList;
     }
 
     @Override
@@ -50,7 +68,13 @@ public class DefaultComparator extends AbstractComparator {
     @Override
     public void compareValues(String prefix, Object expectedValue, Object actualValue, JSONCompareResult result)
             throws JSONException {
-        if (areNumbers(expectedValue, actualValue)) {
+        if (expectedValue == null && actualValue == null) {
+            return;
+        } else if (expectedValue == null && actualValue != null) {
+            result.unexpected(prefix, actualValue);
+        } else if (expectedValue != null && actualValue == null) {
+            result.missing(prefix, expectedValue);
+        } else if (areNumbers(expectedValue, actualValue)) {
             if (areNotSameDoubles(expectedValue, actualValue)) {
                 result.fail(prefix, expectedValue, actualValue);
             }
@@ -70,10 +94,10 @@ public class DefaultComparator extends AbstractComparator {
     @Override
     public void compareJSONArray(String prefix, JSONArray expected, JSONArray actual, JSONCompareResult result)
             throws JSONException {
-        if (expected.length() != actual.length()) {
-            result.fail(prefix + "[]: Expected " + expected.length() + " values but got " + actual.length());
+        if (expected.size() != actual.size()) {
+            result.fail(prefix + "[]: Expected " + expected.size() + " values but got " + actual.size());
             return;
-        } else if (expected.length() == 0) {
+        } else if (expected.size() == 0) {
             return; // Nothing to compare
         }
 

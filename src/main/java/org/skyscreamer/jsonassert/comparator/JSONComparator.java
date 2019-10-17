@@ -10,22 +10,36 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert.comparator;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import org.skyscreamer.jsonassert.JSONCompareResult;
+
+import java.util.List;
 
 /**
  * Interface for comparison handler.
  *
  * @author <a href="mailto:aiveeen@gmail.com">Ivan Zaytsev</a>
- *         2013-01-04
+ * 2013-01-04
  */
 public interface JSONComparator {
+
+    /**
+     * set need ignore path's list
+     *
+     * @param ignorePathList
+     */
+    //void setIgnorePathList(List<String> ignorePathList);
+
+    /**
+     * @return
+     */
+    List<String> getIgnorePathList();
 
     /**
      * Compares two {@link JSONObject}s and returns the result of the comparison in a {@link JSONCompareResult} object.
@@ -82,4 +96,5 @@ public interface JSONComparator {
      * @throws JSONException JSON parsing error
      */
     void compareJSONArray(String prefix, JSONArray expected, JSONArray actual, JSONCompareResult result) throws JSONException;
+
 }

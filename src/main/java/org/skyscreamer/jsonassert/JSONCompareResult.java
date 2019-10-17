@@ -10,185 +10,166 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 /**
  * Bean for holding results from JSONCompare.
  */
 public class JSONCompareResult {
-    private boolean _success;
-    private StringBuilder _message;
-    private String _field;
-    private Object _expected;
-    private Object _actual;
-    private final List<FieldComparisonFailure> _fieldFailures = new ArrayList<FieldComparisonFailure>();
-    private final List<FieldComparisonFailure> _fieldMissing = new ArrayList<FieldComparisonFailure>();
-    private final List<FieldComparisonFailure> _fieldUnexpected = new ArrayList<FieldComparisonFailure>();
+
+    private boolean success;
+    private StringBuilder message;
+    private final List<FieldComparisonFailure> fieldFailures = new ArrayList();
+    private final List<FieldComparisonFailure> fieldMissing = new ArrayList();
+    private final List<FieldComparisonFailure> fieldUnexpected = new ArrayList();
+
+    /**
+     * 需要忽略的path
+     */
+    private List<String> ignorePathList;
 
     /**
      * Default constructor.
      */
     public JSONCompareResult() {
-        this(true, null);
+        this(true, null, null);
     }
 
-    private JSONCompareResult(boolean success, String message) {
-        _success = success;
-        _message = new StringBuilder(message == null ? "" : message);
+    public JSONCompareResult(List<String> ignorePathList) {
+        this(true, null, ignorePathList);
+    }
+
+    private JSONCompareResult(boolean success, String message, List<String> ignorePathList) {
+        this.success = success;
+        this.message = new StringBuilder(message == null ? "" : message);
+        this.ignorePathList = ignorePathList == null ? new ArrayList(0) : ignorePathList;
     }
 
     /**
      * Did the comparison pass?
+     *
      * @return True if it passed
      */
     public boolean passed() {
-        return _success;
+        return success;
     }
 
     /**
      * Did the comparison fail?
+     *
      * @return True if it failed
      */
     public boolean failed() {
-        return !_success;
+        return !success;
     }
 
     /**
      * Result message
+     *
      * @return String explaining why if the comparison failed
      */
     public String getMessage() {
-        return _message.toString();
+        return message.toString();
     }
 
     /**
      * Get the list of failures on field comparisons
+     *
      * @return list of comparsion failures
      */
     public List<FieldComparisonFailure> getFieldFailures() {
-        return Collections.unmodifiableList(_fieldFailures);
+        return Collections.unmodifiableList(fieldFailures);
     }
-    
+
     /**
      * Get the list of missed on field comparisons
+     *
      * @return list of comparsion failures
      */
     public List<FieldComparisonFailure> getFieldMissing() {
-        return Collections.unmodifiableList(_fieldMissing);
+        return Collections.unmodifiableList(fieldMissing);
     }
-    
+
     /**
      * Get the list of failures on field comparisons
+     *
      * @return list of comparsion failures
      */
     public List<FieldComparisonFailure> getFieldUnexpected() {
-        return Collections.unmodifiableList(_fieldUnexpected);
+        return Collections.unmodifiableList(fieldUnexpected);
     }
 
     /**
-     * Actual field value
-     * 
-     * @return a {@code JSONObject}, {@code JSONArray} or other {@code Object}
-     *         instance, or {@code null} if the comparison did not fail on a
-     *         particular field
-     * @deprecated Superseded by {@link #getFieldFailures()}
-     */
-    @Deprecated
-    public Object getActual() {
-        return _actual;
-    }
-    
-    /**
-     * Expected field value
-     * 
-     * @return a {@code JSONObject}, {@code JSONArray} or other {@code Object}
-     *         instance, or {@code null} if the comparison did not fail on a
-     *         particular field
-     * @deprecated Superseded by {@link #getFieldFailures()}
-     */
-    @Deprecated
-    public Object getExpected() {
-        return _expected;
-    }
-    
-    /**
      * Check if comparison failed on any particular fields
+     *
      * @return true if there are field failures
      */
     public boolean isFailureOnField() {
-        return !_fieldFailures.isEmpty();
-    }
-    
-    /**
-     * Check if comparison failed with missing on any particular fields
-     * @return true if an expected field is missing
-     */
-    public boolean isMissingOnField() {
-        return !_fieldMissing.isEmpty();
-    }
-    
-    /**
-     * Check if comparison failed with unexpected on any particular fields
-     * @return true if an unexpected field is in the result
-     */
-    public boolean isUnexpectedOnField() {
-        return !_fieldUnexpected.isEmpty();
+        return !fieldFailures.isEmpty();
     }
 
     /**
-     * Dot-separated path the the field that failed comparison
-     * 
-     * @return a {@code String} instance, or {@code null} if the comparison did
-     *         not fail on a particular field
-     * @deprecated Superseded by {@link #getFieldFailures()}
+     * Check if comparison failed with missing on any particular fields
+     *
+     * @return true if an expected field is missing
      */
-    @Deprecated
-    public String getField() {
-        return _field;
+    public boolean isMissingOnField() {
+        return !fieldMissing.isEmpty();
     }
-    
+
+    /**
+     * Check if comparison failed with unexpected on any particular fields
+     *
+     * @return true if an unexpected field is in the result
+     */
+    public boolean isUnexpectedOnField() {
+        return !fieldUnexpected.isEmpty();
+    }
+
     public void fail(String message) {
-        _success = false;
-        if (_message.length() == 0) {
-            _message.append(message);
+        this.success = false;
+        if (message.length() == 0) {
+            this.message.append(message);
         } else {
-            _message.append(" ; ").append(message);
+            this.message.append(" ; ").append(message);
         }
     }
 
     /**
      * Identify that the comparison failed
-     * @param field Which field failed
+     *
+     * @param field    Which field failed
      * @param expected Expected result
-     * @param actual Actual result
+     * @param actual   Actual result
      * @return result of comparision
      */
     public JSONCompareResult fail(String field, Object expected, Object actual) {
-        _fieldFailures.add(new FieldComparisonFailure(field, expected, actual));
-        this._field = field;
-        this._expected = expected;
-        this._actual = actual;
+        if (isFilter(field, ignorePathList)) {
+            return this;
+        }
+        this.fieldFailures.add(new FieldComparisonFailure(field, expected, actual));
         fail(formatFailureMessage(field, expected, actual));
         return this;
     }
 
     /**
      * Identify that the comparison failed
-     * @param field Which field failed
+     *
+     * @param field     Which field failed
      * @param exception exception containing details of match failure
      * @return result of comparision
      */
     public JSONCompareResult fail(String field, ValueMatcherException exception) {
-    	fail(field + ": " + exception.getMessage(), exception.getExpected(), exception.getActual());
+        fail(field + ": " + exception.getMessage(), exception.getExpected(), exception.getActual());
         return this;
     }
 
@@ -203,12 +184,16 @@ public class JSONCompareResult {
 
     /**
      * Identify the missing field
-     * @param field missing field
+     *
+     * @param field    missing field
      * @param expected expected result
      * @return result of comparison
      */
     public JSONCompareResult missing(String field, Object expected) {
-    	_fieldMissing.add(new FieldComparisonFailure(field, expected, null));
+        if (isFilter(field, ignorePathList)) {
+            return this;
+        }
+        fieldMissing.add(new FieldComparisonFailure(field, expected, null));
         fail(formatMissing(field, expected));
         return this;
     }
@@ -222,12 +207,16 @@ public class JSONCompareResult {
 
     /**
      * Identify unexpected field
-     * @param field unexpected field
+     *
+     * @param field  unexpected field
      * @param actual actual result
      * @return result of comparison
      */
     public JSONCompareResult unexpected(String field, Object actual) {
-    	_fieldUnexpected.add(new FieldComparisonFailure(field, null, actual));
+        if (isFilter(field, ignorePathList)) {
+            return this;
+        }
+        fieldUnexpected.add(new FieldComparisonFailure(field, null, actual));
         fail(formatUnexpected(field, actual));
         return this;
     }
@@ -244,13 +233,19 @@ public class JSONCompareResult {
             return "a JSON array";
         } else if (value instanceof JSONObject) {
             return "a JSON object";
+        } else if (value == null) {
+            return "null";
         } else {
             return value.toString();
         }
     }
 
+    public boolean isFilter(String path, List<String> ignorePathList) {
+        return ignorePathList.contains(path);
+    }
+
     @Override
     public String toString() {
-        return _message.toString();
+        return message.toString();
     }
 }
