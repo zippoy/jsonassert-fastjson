@@ -10,7 +10,7 @@
 
     <groupId>com.zippoy</groupId>
     <artifactId>jsonassert-fastjson</artifactId>
-    <version>1.5.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <name>jsonassert-fastjson</name>
@@ -52,6 +52,12 @@
         </developer>
     </developers>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
     <!-- For JSONAssert -->
     <dependencies>
         <dependency>
@@ -74,8 +80,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -102,9 +108,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <encoding>UTF-8</encoding>
-                    <charset>UTF-8</charset>
-                    <docencoding>UTF-8</docencoding>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <charset>${project.build.sourceEncoding}</charset>
+                    <docencoding>${project.build.sourceEncoding}</docencoding>
                 </configuration>
                 <executions>
                     <execution>

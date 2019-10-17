@@ -239,7 +239,7 @@ public class JSONAssertTest {
         FieldComparisonFailure comparisonFailure = result.getFieldFailures().iterator().next();
         Assert.assertEquals("Pat", comparisonFailure.getExpected());
         Assert.assertEquals("Sue", comparisonFailure.getActual());
-        Assert.assertEquals("name", comparisonFailure.getField());
+        Assert.assertEquals("name", comparisonFailure.getPath());
     }
 
     @Test

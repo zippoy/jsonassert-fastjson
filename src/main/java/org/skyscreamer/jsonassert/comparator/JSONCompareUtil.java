@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert.comparator;
 
@@ -78,14 +78,14 @@ public final class JSONCompareUtil {
      * <p>Looks to see if candidate field is a possible unique key across a array of objects.
      * Returns true IFF:</p>
      * <ol>
-     *   <li>array is an array of JSONObject
-     *   <li>candidate is a top-level field in each of of the objects in the array
-     *   <li>candidate is a simple value (not JSONObject or JSONArray)
-     *   <li>candidate is unique across all elements in the array
+     * <li>array is an array of JSONObject
+     * <li>candidate is a top-level field in each of of the objects in the array
+     * <li>candidate is a simple value (not JSONObject or JSONArray)
+     * <li>candidate is unique across all elements in the array
      * </ol>
      *
      * @param candidate is usable as a unique key if every element in the
-     * @param array is a JSONObject having that key, and no two values are the same.
+     * @param array     is a JSONObject having that key, and no two values are the same.
      * @return true if the candidate can work as a unique id across array
      * @throws JSONException JSON parsing error
      */
@@ -199,6 +199,10 @@ public final class JSONCompareUtil {
 
     public static String qualify(String prefix, String key) {
         return "".equals(prefix) ? key : prefix + "." + key;
+    }
+
+    public static String qualify(String prefix, String key, String extraRoot) {
+        return "".equals(prefix) ? key : prefix + "." + key + "#" + extraRoot;
     }
 
     public static String formatUniqueKey(String key, String uniqueKey, Object value) {

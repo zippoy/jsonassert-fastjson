@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert.comparator;
 
@@ -46,7 +46,7 @@ public abstract class AbstractComparator implements JSONComparator {
      */
     @Override
     public final JSONCompareResult compareJSON(JSONObject expected, JSONObject actual) throws JSONException {
-        JSONCompareResult result = new JSONCompareResult();
+        JSONCompareResult result = new JSONCompareResult(getIgnorePathList());
         compareJSON("", expected, actual, result);
         return result;
     }
@@ -60,7 +60,7 @@ public abstract class AbstractComparator implements JSONComparator {
      */
     @Override
     public final JSONCompareResult compareJSON(JSONArray expected, JSONArray actual) throws JSONException {
-        JSONCompareResult result = new JSONCompareResult();
+        JSONCompareResult result = new JSONCompareResult(getIgnorePathList());
         compareJSONArray("", expected, actual, result);
         return result;
     }
@@ -69,7 +69,7 @@ public abstract class AbstractComparator implements JSONComparator {
         Set<String> actualKeys = getKeys(actual);
         for (String key : actualKeys) {
             if (!expected.containsKey(key)) {
-                result.unexpected(prefix, key);
+                result.unexpected(qualify(prefix, key), actual.get(key));
             }
         }
     }
@@ -82,7 +82,7 @@ public abstract class AbstractComparator implements JSONComparator {
                 Object actualValue = actual.get(key);
                 compareValues(qualify(prefix, key), expectedValue, actualValue, result);
             } else {
-                result.missing(prefix, key);
+                result.missing(qualify(prefix, key), expectedValue);
             }
         }
     }

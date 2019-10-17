@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert;
 
@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONAware;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 
 /**
  * Simple JSON parsing utility.
@@ -29,7 +30,8 @@ public class JSONParser {
     // ... [or] NaN or Infinity".
     private static final String NUMBER_REGEX = "-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?";
 
-    private JSONParser() {}
+    private JSONParser() {
+    }
 
     /**
      * Takes a JSON string and returns either a {@link JSONObject} or {@link JSONArray},
@@ -41,19 +43,33 @@ public class JSONParser {
      */
     public static Object parseJSON(final String s) throws JSONException {
         if (s.trim().startsWith("{")) {
-            return JSON.parseObject(s);
-        }
-        else if (s.trim().startsWith("[")) {
-            return JSONArray.parseArray(s);
+            return parseJSONObject(s);
+        } else if (s.trim().startsWith("[")) {
+            return parseJSONArray(s);
         } else if (s.trim().startsWith("\"")
-                   || s.trim().matches(NUMBER_REGEX)) {
-          return new JSONAware() {
-            @Override
-            public String toJSONString() {
-              return s;
-            }
-          };
+                || s.trim().matches(NUMBER_REGEX)) {
+            return (JSONAware) () -> s;
         }
         throw new JSONException("Unparsable JSON string: " + s);
     }
+
+
+    public static JSONObject parseJSONObject(final String s) {
+        return JSON.parseObject(s, Feature.CustomMapDeserializer);
+    }
+
+    public static Object parseJSONArray(final String s) {
+        return JSON.parse(s, Feature.CustomMapDeserializer);
+    }
+
+
+    public static void main(String[] args) {
+        String json = "{{\"customerName\":\"何功武\"}:{\"customerName\":\"刘振华\"}}";
+
+
+        Object obj = JSONParser.parseJSON(json);
+
+        System.out.println(obj);
+    }
+
 }

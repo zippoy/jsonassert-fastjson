@@ -16,6 +16,12 @@ Supported test frameworks:
 Branch
 -------
 
+init_fix:
+ * add ignore path list in the class of DefaultComparator
+ * rename all fields in the class of FieldComparisonFailure
+ * add the class of ComplexComparator
+ * fix any bugs
+
 init:
  * change [com.vaadin.external.google:android-json](http://search.maven.org/#artifactdetails%7Ccom.vaadin.external.google%7Candroid-json%7C0.0.20131108.vaadin1%7Cjar) to [fastjson](https://github.com/alibaba/fastjson)
 
@@ -87,8 +93,8 @@ To use, [download the JAR](https://github.com/skyscreamer/JSONassert/releases) o
     <dependency>
         <groupId>com.zippoy</groupId>
         <artifactId>jsonassert-fastjson</artifactId>
-        <version>1.5.0</version>
-	<scope>test</scope>
+        <version>2.0.0</version>
+	      <scope>test</scope>
     </dependency>
 
 Write tests like this:

@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert;
 
@@ -18,25 +18,36 @@ package org.skyscreamer.jsonassert;
  * Models a failure when comparing two fields.
  */
 public class FieldComparisonFailure {
-    private final String _field;
-    private final Object _expected;
-    private final Object _actual;
+    private final String path;
+    private final Object expected;
+    private final Object actual;
+    private final boolean ignore;
 
-    public FieldComparisonFailure(String field, Object expected, Object actual) {
-        this._field = field;
-        this._expected = expected;
-        this._actual = actual;
+    public FieldComparisonFailure(String path, Object expected, Object actual) {
+        this(path, expected, actual, false);
     }
 
-    public String getField() {
-        return _field;
+    public FieldComparisonFailure(String path, Object expected, Object actual, boolean ignore) {
+        this.path = path;
+        this.expected = expected;
+        this.actual = actual;
+        this.ignore = ignore;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public Object getExpected() {
-        return _expected;
+        return expected;
     }
 
     public Object getActual() {
-        return _actual;
+        return actual;
     }
+
+    public boolean isIgnore() {
+        return ignore;
+    }
+
 }
