@@ -12,6 +12,13 @@ Supported test frameworks:
 
  * [JUnit](http://junit.org)
 
+Branch
+-------
+
+master_from_20191016:
+ * fork from [skyscreamer/JSONassert](https://github.com/skyscreamer/JSONassert)
+
+
 Examples
 --------
 
