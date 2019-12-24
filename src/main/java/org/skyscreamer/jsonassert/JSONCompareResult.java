@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.skyscreamer.jsonassert.comparator.DefaultComparator.EMPTY_CONFIG;
+
 /**
  * Bean for holding results from JSONCompare.
  */
@@ -32,26 +34,28 @@ public class JSONCompareResult {
     private final List<FieldComparisonFailure> fieldMissing = new ArrayList();
     private final List<FieldComparisonFailure> fieldUnexpected = new ArrayList();
 
-    /**
-     * 需要忽略的path
-     */
-    private List<String> ignorePathList;
+
+    private JSONCompareConfig jsonCompareConfig;
 
     /**
      * Default constructor.
      */
     public JSONCompareResult() {
-        this(true, null, null);
+        this(true, null, EMPTY_CONFIG);
     }
 
-    public JSONCompareResult(List<String> ignorePathList) {
-        this(true, null, ignorePathList);
+    public JSONCompareResult(JSONCompareConfig jsonCompareConfig) {
+        this(true, null, jsonCompareConfig == null ? EMPTY_CONFIG : jsonCompareConfig);
     }
 
-    private JSONCompareResult(boolean success, String message, List<String> ignorePathList) {
+    public JSONCompareResult(boolean success, String message) {
+        this(success, message, EMPTY_CONFIG);
+    }
+
+    public JSONCompareResult(boolean success, String message, JSONCompareConfig jsonCompareConfig) {
         this.success = success;
         this.message = new StringBuilder(message == null ? "" : message);
-        this.ignorePathList = ignorePathList == null ? new ArrayList(0) : ignorePathList;
+        this.jsonCompareConfig = jsonCompareConfig == null ? EMPTY_CONFIG : jsonCompareConfig;
     }
 
     /**
@@ -147,29 +151,30 @@ public class JSONCompareResult {
     /**
      * Identify that the comparison failed
      *
-     * @param field    Which field failed
+     * @param joinner    Which field failed
      * @param expected Expected result
      * @param actual   Actual result
      * @return result of comparision
      */
-    public JSONCompareResult fail(String field, Object expected, Object actual) {
-        if (isFilter(field, ignorePathList)) {
+    public JSONCompareResult fail(JSONPathJoinner joinner, Object expected, Object actual) {
+        String path = joinner.getPath();
+        if (isFilter(path, jsonCompareConfig.getIgnorePathList())) {
             return this;
         }
-        this.fieldFailures.add(new FieldComparisonFailure(field, expected, actual));
-        fail(formatFailureMessage(field, expected, actual));
+        this.fieldFailures.add(new FieldComparisonFailure(path, expected, actual));
+        fail(formatFailureMessage(path, expected, actual));
         return this;
     }
 
     /**
      * Identify that the comparison failed
      *
-     * @param field     Which field failed
+     * @param joinner     Which field failed
      * @param exception exception containing details of match failure
      * @return result of comparision
      */
-    public JSONCompareResult fail(String field, ValueMatcherException exception) {
-        fail(field + ": " + exception.getMessage(), exception.getExpected(), exception.getActual());
+    public JSONCompareResult fail(JSONPathJoinner joinner, ValueMatcherException exception) {
+        fail(joinner.append(": ") .append(exception.getMessage()), exception.getExpected(), exception.getActual());
         return this;
     }
 
@@ -185,21 +190,22 @@ public class JSONCompareResult {
     /**
      * Identify the missing field
      *
-     * @param field    missing field
+     * @param joinner    missing field
      * @param expected expected result
      * @return result of comparison
      */
-    public JSONCompareResult missing(String field, Object expected) {
-        if (isFilter(field, ignorePathList)) {
+    public JSONCompareResult missing(JSONPathJoinner joinner, Object expected) {
+        String path = joinner.getPath();
+        if (isFilter(path, jsonCompareConfig.getIgnorePathList())) {
             return this;
         }
-        fieldMissing.add(new FieldComparisonFailure(field, expected, null));
-        fail(formatMissing(field, expected));
+        fieldMissing.add(new FieldComparisonFailure(path, expected, null));
+        fail(formatMissing(path, expected));
         return this;
     }
 
-    private String formatMissing(String field, Object expected) {
-        return field
+    private String formatMissing(String path, Object expected) {
+        return path
                 + "\nExpected: "
                 + describe(expected)
                 + "\n     but none found\n";
@@ -208,21 +214,22 @@ public class JSONCompareResult {
     /**
      * Identify unexpected field
      *
-     * @param field  unexpected field
+     * @param joinner  unexpected field
      * @param actual actual result
      * @return result of comparison
      */
-    public JSONCompareResult unexpected(String field, Object actual) {
-        if (isFilter(field, ignorePathList)) {
+    public JSONCompareResult unexpected(JSONPathJoinner joinner, Object actual) {
+        String path = joinner.getPath();
+        if (isFilter(path, jsonCompareConfig.getIgnorePathList())) {
             return this;
         }
-        fieldUnexpected.add(new FieldComparisonFailure(field, null, actual));
-        fail(formatUnexpected(field, actual));
+        fieldUnexpected.add(new FieldComparisonFailure(path, null, actual));
+        fail(formatUnexpected(path, actual));
         return this;
     }
 
-    private String formatUnexpected(String field, Object actual) {
-        return field
+    private String formatUnexpected(String path, Object actual) {
+        return path
                 + "\nUnexpected: "
                 + describe(actual)
                 + "\n";
@@ -241,7 +248,7 @@ public class JSONCompareResult {
     }
 
     public boolean isFilter(String path, List<String> ignorePathList) {
-        return ignorePathList.contains(path);
+        return null != ignorePathList && ignorePathList.contains(path);
     }
 
     @Override

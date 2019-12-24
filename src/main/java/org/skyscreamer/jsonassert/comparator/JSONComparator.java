@@ -17,9 +17,9 @@ package org.skyscreamer.jsonassert.comparator;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import org.skyscreamer.jsonassert.JSONCompareConfig;
 import org.skyscreamer.jsonassert.JSONCompareResult;
-
-import java.util.List;
+import org.skyscreamer.jsonassert.JSONPathJoinner;
 
 /**
  * Interface for comparison handler.
@@ -30,16 +30,24 @@ import java.util.List;
 public interface JSONComparator {
 
     /**
-     * set need ignore path's list
-     *
-     * @param ignorePathList
-     */
-    //void setIgnorePathList(List<String> ignorePathList);
-
-    /**
+     * get need ignore path's list
      * @return
      */
-    List<String> getIgnorePathList();
+    //List<String> getIgnorePathList();
+
+    /**
+     * get no strict order ignore path's list
+     * the path list of JSONArray that can be compared without order
+     * @return
+     */
+    //List<String> getNoStrictOrderPathList();
+
+
+    /**
+     *
+     * @return
+     */
+    JSONCompareConfig getJsonCompareConfig();
 
     /**
      * Compares two {@link JSONObject}s and returns the result of the comparison in a {@link JSONCompareResult} object.
@@ -65,36 +73,36 @@ public interface JSONComparator {
      * Compares two {@link JSONObject}s on the provided path represented by {@code prefix} and
      * updates the result of the comparison in the {@code result} {@link JSONCompareResult} object.
      *
-     * @param prefix   the path in the json where the comparison happens
+     * @param joinner   the path in the json where the comparison happens
      * @param expected the expected JSON object
      * @param actual   the actual JSON object
      * @param result   stores the actual state of the comparison result
      * @throws JSONException JSON parsing error
      */
-    void compareJSON(String prefix, JSONObject expected, JSONObject actual, JSONCompareResult result) throws JSONException;
+    void compareJSON(JSONPathJoinner joinner, JSONObject expected, JSONObject actual, JSONCompareResult result) throws JSONException;
 
     /**
      * Compares two {@link Object}s on the provided path represented by {@code prefix} and
      * updates the result of the comparison in the {@code result} {@link JSONCompareResult} object.
      *
-     * @param prefix        the path in the json where the comparison happens
+     * @param joinner        the path in the json where the comparison happens
      * @param expectedValue the expected value
      * @param actualValue   the actual value
      * @param result        stores the actual state of the comparison result
      * @throws JSONException JSON parsing error
      */
-    void compareValues(String prefix, Object expectedValue, Object actualValue, JSONCompareResult result) throws JSONException;
+    void compareValues(JSONPathJoinner joinner, Object expectedValue, Object actualValue, JSONCompareResult result) throws JSONException;
 
     /**
      * Compares two {@link JSONArray}s on the provided path represented by {@code prefix} and
      * updates the result of the comparison in the {@code result} {@link JSONCompareResult} object.
      *
-     * @param prefix   the path in the json where the comparison happens
+     * @param joinner   the path in the json where the comparison happens
      * @param expected the expected JSON array
      * @param actual   the actual JSON array
      * @param result   stores the actual state of the comparison result
      * @throws JSONException JSON parsing error
      */
-    void compareJSONArray(String prefix, JSONArray expected, JSONArray actual, JSONCompareResult result) throws JSONException;
+    void compareJSONArray(JSONPathJoinner joinner, JSONArray expected, JSONArray actual, JSONCompareResult result) throws JSONException;
 
 }

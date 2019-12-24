@@ -17,15 +17,19 @@ package org.skyscreamer.jsonassert.comparator;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import org.skyscreamer.jsonassert.JSONPathJoinner;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import static org.skyscreamer.jsonassert.comparator.AbstractComparator.SPECIAL_STRING_PATH_SEPARATE;
 
 /**
  * Utility class that contains Json manipulation methods.
@@ -46,7 +50,7 @@ public final class JSONCompareUtil {
      * @throws JSONException JSON parsing error
      */
     public static Map<Object, JSONObject> arrayOfJsonObjectToMap(JSONArray array, String uniqueKey) throws JSONException {
-        Map<Object, JSONObject> valueMap = new HashMap<Object, JSONObject>();
+        Map<Object, JSONObject> valueMap = new LinkedHashMap();
         for (int i = 0; i < array.size(); ++i) {
             JSONObject jsonObject = (JSONObject) array.get(i);
             Object id = jsonObject.get(uniqueKey);
@@ -197,16 +201,20 @@ public final class JSONCompareUtil {
         return keys;
     }
 
-    public static String qualify(String prefix, String key) {
-        return "".equals(prefix) ? key : prefix + "." + key;
+//    public static String qualify(String prefix, String key) {
+//        return "".equals(prefix) ? key : prefix + "." + key;
+//    }
+
+    public static JSONPathJoinner formatUniqueKey(JSONPathJoinner key, String uniqueKey, Object value) {
+        return key.append("[").append(uniqueKey).append("=").append(value.toString()).append("]");
     }
 
-    public static String qualify(String prefix, String key, String extraRoot) {
-        return "".equals(prefix) ? key : prefix + "." + key + "#" + extraRoot;
-    }
+//    public static String formatUniqueKeyaaa(String key, String uniqueKey) {
+//        return key + "[" + uniqueKey;
+//    }
 
-    public static String formatUniqueKey(String key, String uniqueKey, Object value) {
-        return key + "[" + uniqueKey + "=" + value + "]";
+    public static JSONPathJoinner formatUniqueKey(JSONPathJoinner key, String uniqueKey, Object value, String extraKey) {
+        return key.append("[").append(uniqueKey).append(SPECIAL_STRING_PATH_SEPARATE).append(extraKey).append("=").append(value.toString()).append("]");
     }
 
     /**

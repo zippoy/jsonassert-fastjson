@@ -3,15 +3,15 @@ package org.skyscreamer.jsonassert.comparator;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import org.skyscreamer.jsonassert.JSONCompareConfig;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONCompareResult;
 import org.skyscreamer.jsonassert.JSONParser;
+import org.skyscreamer.jsonassert.JSONPathJoinner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public class ComplexComparator extends DefaultComparator {
 
-    public static final String SPECIAL_STRING_PATH_SEPARATE = ".$";
+
 
     /**
      * whether to enable diff of JSON that is string, is not a json object
@@ -32,57 +32,57 @@ public class ComplexComparator extends DefaultComparator {
     private boolean openStrJSONDiff;
 
     public ComplexComparator(JSONCompareMode mode) {
-        this(mode, new ArrayList(), false);
+        this(mode, EMPTY_CONFIG, false);
     }
 
-    public ComplexComparator(JSONCompareMode mode, List<String> ignorePathList) {
-        this(mode, ignorePathList, false);
+    public ComplexComparator(JSONCompareMode mode, JSONCompareConfig jsonCompareConfig) {
+        this(mode, jsonCompareConfig, false);
     }
 
-    public ComplexComparator(JSONCompareMode mode, List<String> ignorePathList, boolean openStrJSONDiff) {
-        super(mode, ignorePathList);
+    public ComplexComparator(JSONCompareMode mode, JSONCompareConfig jsonCompareConfig, boolean openStrJSONDiff) {
+        super(mode, jsonCompareConfig);
         this.openStrJSONDiff = openStrJSONDiff;
     }
 
     @Override
-    public void compareValues(String prefix, Object expectedValue, Object actualValue, JSONCompareResult result)
+    public void compareValues(JSONPathJoinner joinner, Object expectedValue, Object actualValue, JSONCompareResult result)
             throws JSONException {
 
         if (expectedValue == null && actualValue == null) {
             return;
         } else if (expectedValue == null && actualValue != null) {
-            result.unexpected(prefix, actualValue);
+            result.unexpected(joinner, actualValue);
         } else if (expectedValue != null && actualValue == null) {
-            result.missing(prefix, expectedValue);
+            result.missing(joinner, expectedValue);
         } else if (areNumbers(expectedValue, actualValue)) {
             if (areNotSameDoubles(expectedValue, actualValue)) {
-                result.fail(prefix, expectedValue, actualValue);
+                result.fail(joinner, expectedValue, actualValue);
             }
         } else if (expectedValue.getClass().isAssignableFrom(actualValue.getClass())) {
             if (expectedValue instanceof JSONArray) {
-                compareJSONArray(prefix, (JSONArray) expectedValue, (JSONArray) actualValue, result);
+                compareJSONArray(joinner, (JSONArray) expectedValue, (JSONArray) actualValue, result);
             } else if (expectedValue instanceof JSONObject) {
-                compareJSON(prefix, (JSONObject) expectedValue, (JSONObject) actualValue, result);
+                compareJSON(joinner, (JSONObject) expectedValue, (JSONObject) actualValue, result);
             } else if (expectedValue instanceof Map) {
-                compareJSON(prefix, new JSONObject((Map) expectedValue), new JSONObject((Map) actualValue), result);
+                compareJSON(joinner, new JSONObject((Map) expectedValue), new JSONObject((Map) actualValue), result);
             } else if (openStrJSONDiff && (expectedValue instanceof String)) {
                 if (!areNotSame(expectedValue, actualValue)) {
                     return;
                 } else if (areJSONStrings((String) expectedValue, (String) actualValue)) {
-                    compareJSON(prefix + SPECIAL_STRING_PATH_SEPARATE, JSONParser.parseJSONObject((String) expectedValue), JSONParser.parseJSONObject((String) actualValue), result);
+                    compareJSON(joinner.appendChildPrefix(), JSONParser.parseJSONObject((String) expectedValue), JSONParser.parseJSONObject((String) actualValue), result);
                 } else if (areJSONArrayStrings((String) expectedValue, (String) actualValue)) {
-                    compareJSONArray(prefix + SPECIAL_STRING_PATH_SEPARATE, (JSONArray) JSONParser.parseJSONArray((String) expectedValue), (JSONArray) JSONParser.parseJSONArray((String) actualValue), result);
+                    compareJSONArray(joinner.appendChildPrefix(), (JSONArray) JSONParser.parseJSONArray((String) expectedValue), (JSONArray) JSONParser.parseJSONArray((String) actualValue), result);
                 } else {
-                    result.fail(prefix, expectedValue, actualValue);
+                    result.fail(joinner, expectedValue, actualValue);
                 }
             } else if (areNotSame(expectedValue, actualValue)) {
                 if (isTimeAccuracyError(expectedValue, actualValue)) {
                     return;
                 }
-                result.fail(prefix, expectedValue, actualValue);
+                result.fail(joinner, expectedValue, actualValue);
             }
         } else {
-            result.fail(prefix, expectedValue, actualValue);
+            result.fail(joinner, expectedValue, actualValue);
         }
     }
 

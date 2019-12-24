@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert;
 
@@ -96,14 +96,14 @@ public class JSONAssertTest {
 
     @Test // Currently JSONAssert assumes JSONObject.
     public void testArray() throws JSONException {
-        testPass("[1,2,3]","[1,2,3]", STRICT);
-        testPass("[1,2,3]","[1,3,2]", LENIENT);
-        testFail("[1,2,3]","[1,3,2]", STRICT);
-        testFail("[1,2,3]","[4,5,6]", LENIENT);
-        testPass("[1,2,3]","[1,2,3]", STRICT_ORDER);
-        testPass("[1,2,3]","[1,3,2]", NON_EXTENSIBLE);
-        testFail("[1,2,3]","[1,3,2]", STRICT_ORDER);
-        testFail("[1,2,3]","[4,5,6]", NON_EXTENSIBLE);
+        testPass("[1,2,3]", "[1,2,3]", STRICT);
+        testPass("[1,2,3]", "[1,3,2]", LENIENT);
+        testFail("[1,2,3]", "[1,3,2]", STRICT);
+        testFail("[1,2,3]", "[4,5,6]", LENIENT);
+        testPass("[1,2,3]", "[1,2,3]", STRICT_ORDER);
+        testPass("[1,2,3]", "[1,3,2]", NON_EXTENSIBLE);
+        testFail("[1,2,3]", "[1,3,2]", STRICT_ORDER);
+        testFail("[1,2,3]", "[4,5,6]", NON_EXTENSIBLE);
     }
 
     @Test
@@ -189,8 +189,8 @@ public class JSONAssertTest {
     @Test
     public void testComplexArray() throws JSONException {
         testPass("{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
-                 "{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
-                 STRICT); // Exact to exact (strict)
+                "{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
+                STRICT); // Exact to exact (strict)
         testFail("{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
                 "{id:1,name:\"Joe\",friends:[{id:3,name:\"Sue\",pets:[\"fish\",\"bird\"]},{id:2,name:\"Pat\",pets:[\"dog\"]}],pets:[]}",
                 STRICT); // Out-of-order fails (strict)
@@ -506,18 +506,18 @@ public class JSONAssertTest {
     @Test
     public void testAssertEqualsString2JsonComparator() throws IllegalArgumentException, JSONException {
         JSONAssert.assertEquals("Message", "{\"entry\":{\"id\":x}}", "{\"entry\":{\"id\":1, \"id\":2}}",
-            new CustomComparator(
-                JSONCompareMode.STRICT,
-                new Customization("entry.id",
-                new RegularExpressionValueMatcher<Object>("\\d"))
-         ));
+                new CustomComparator(
+                        JSONCompareMode.STRICT,
+                        new Customization("entry.id",
+                                new RegularExpressionValueMatcher<Object>("\\d"))
+                ));
 
         performAssertEqualsTestForMessageVerification("{\"entry\":{\"id\":x}}", "{\"entry\":{\"id\":1, \"id\":as}}",
-            new CustomComparator(
-                JSONCompareMode.STRICT,
-                new Customization("entry.id",
-                new RegularExpressionValueMatcher<Object>("\\d"))
-        ));
+                new CustomComparator(
+                        JSONCompareMode.STRICT,
+                        new Customization("entry.id",
+                                new RegularExpressionValueMatcher<Object>("\\d"))
+                ));
     }
 
     @Test
@@ -634,46 +634,44 @@ public class JSONAssertTest {
     @Test
     public void testAssertNotEqualsString2JsonComparator() throws IllegalArgumentException, JSONException {
         JSONAssert.assertNotEquals("Message", "{\"entry\":{\"id\":x}}", "{\"entry\":{\"id\":1, \"id\":hh}}",
-            new CustomComparator(
-                JSONCompareMode.STRICT,
-                new Customization("entry.id",
-                new RegularExpressionValueMatcher<Object>("\\d"))
-         ));
+                new CustomComparator(
+                        JSONCompareMode.STRICT,
+                        new Customization("entry.id",
+                                new RegularExpressionValueMatcher<Object>("\\d"))
+                ));
 
         performAssertNotEqualsTestForMessageVerification("{\"entry\":{\"id\":x}}", "{\"entry\":{\"id\":1, \"id\":2}}",
-            new CustomComparator(
-                JSONCompareMode.STRICT,
-                new Customization("entry.id",
-                new RegularExpressionValueMatcher<Object>("\\d"))
-        ));
+                new CustomComparator(
+                        JSONCompareMode.STRICT,
+                        new Customization("entry.id",
+                                new RegularExpressionValueMatcher<Object>("\\d"))
+                ));
     }
 
     private void testPass(String expected, String actual, JSONCompareMode compareMode)
-            throws JSONException
-    {
+            throws JSONException {
         String message = expected + " == " + actual + " (" + compareMode + ")";
         JSONCompareResult result = JSONCompare.compareJSON(expected, actual, compareMode);
         Assert.assertTrue(message + "\n  " + result.getMessage(), result.passed());
     }
 
     private void testFail(String expected, String actual, JSONCompareMode compareMode)
-            throws JSONException
-    {
+            throws JSONException {
         String message = expected + " != " + actual + " (" + compareMode + ")";
         JSONCompareResult result = JSONCompare.compareJSON(expected, actual, compareMode);
         Assert.assertTrue(message, result.failed());
     }
 
     private void performAssertEqualsTestForMessageVerification(
-        Object expected,
-        Object actual,
-        Object strictMode) throws JSONException {
+            Object expected,
+            Object actual,
+            Object strictMode) throws JSONException {
 
         String message = "Message";
         String testShouldFailMessage = "The test should fail so that the message in AssertionError could be verified.";
         String strictModeMessage = "strictMode must be an instance of JSONCompareMode or Boolean";
         boolean assertEqualsFailed = true;
-        if(expected instanceof String && actual instanceof String && strictMode instanceof JSONComparator) {
+        if (expected instanceof String && actual instanceof String && strictMode instanceof JSONComparator) {
             try {
                 JSONAssert.assertEquals(message, (String) expected, (String) actual, (JSONComparator) strictMode);
                 assertEqualsFailed = false;
@@ -681,12 +679,11 @@ public class JSONAssertTest {
             } catch (AssertionError ae) {
                 handleAssertionError(message, assertEqualsFailed, ae);
             }
-        }
-        else if(expected instanceof String && actual instanceof JSONArray) {
+        } else if (expected instanceof String && actual instanceof JSONArray) {
             try {
-                if(strictMode instanceof JSONCompareMode) {
+                if (strictMode instanceof JSONCompareMode) {
                     JSONAssert.assertEquals(message, (String) expected, (JSONArray) actual, (JSONCompareMode) strictMode);
-                } else if(strictMode instanceof Boolean) {
+                } else if (strictMode instanceof Boolean) {
                     JSONAssert.assertEquals(message, (String) expected, (JSONArray) actual, (Boolean) strictMode);
                 } else {
                     fail(strictModeMessage);
@@ -696,11 +693,11 @@ public class JSONAssertTest {
             } catch (AssertionError ae) {
                 handleAssertionError(message, assertEqualsFailed, ae);
             }
-        } else if(expected instanceof JSONArray && actual instanceof JSONArray) {
+        } else if (expected instanceof JSONArray && actual instanceof JSONArray) {
             try {
-                if(strictMode instanceof JSONCompareMode) {
+                if (strictMode instanceof JSONCompareMode) {
                     JSONAssert.assertEquals(message, (JSONArray) expected, (JSONArray) actual, (JSONCompareMode) strictMode);
-                } else if(strictMode instanceof Boolean) {
+                } else if (strictMode instanceof Boolean) {
                     JSONAssert.assertEquals(message, (JSONArray) expected, (JSONArray) actual, (Boolean) strictMode);
                 } else {
                     fail(strictModeMessage);
@@ -710,11 +707,11 @@ public class JSONAssertTest {
             } catch (AssertionError ae) {
                 handleAssertionError(message, assertEqualsFailed, ae);
             }
-        } else if(expected instanceof String && actual instanceof String) {
+        } else if (expected instanceof String && actual instanceof String) {
             try {
-                if(strictMode instanceof JSONCompareMode) {
+                if (strictMode instanceof JSONCompareMode) {
                     JSONAssert.assertEquals(message, (String) expected, (String) actual, (JSONCompareMode) strictMode);
-                } else if(strictMode instanceof Boolean) {
+                } else if (strictMode instanceof Boolean) {
                     JSONAssert.assertEquals(message, (String) expected, (String) actual, (Boolean) strictMode);
                 } else {
                     fail(strictModeMessage);
@@ -724,11 +721,11 @@ public class JSONAssertTest {
             } catch (AssertionError ae) {
                 handleAssertionError(message, assertEqualsFailed, ae);
             }
-        } else if(expected instanceof String && actual instanceof JSONObject) {
+        } else if (expected instanceof String && actual instanceof JSONObject) {
             try {
-                if(strictMode instanceof JSONCompareMode) {
+                if (strictMode instanceof JSONCompareMode) {
                     JSONAssert.assertEquals(message, (String) expected, (JSONObject) actual, (JSONCompareMode) strictMode);
-                } else if(strictMode instanceof Boolean) {
+                } else if (strictMode instanceof Boolean) {
                     JSONAssert.assertEquals(message, (String) expected, (JSONObject) actual, (Boolean) strictMode);
                 } else {
                     fail(strictModeMessage);
@@ -738,11 +735,11 @@ public class JSONAssertTest {
             } catch (AssertionError ae) {
                 handleAssertionError(message, assertEqualsFailed, ae);
             }
-        } else if(expected instanceof JSONObject && actual instanceof JSONObject) {
+        } else if (expected instanceof JSONObject && actual instanceof JSONObject) {
             try {
-                if(strictMode instanceof JSONCompareMode) {
+                if (strictMode instanceof JSONCompareMode) {
                     JSONAssert.assertEquals(message, (JSONObject) expected, (JSONObject) actual, (JSONCompareMode) strictMode);
-                } else if(strictMode instanceof Boolean) {
+                } else if (strictMode instanceof Boolean) {
                     JSONAssert.assertEquals(message, (JSONObject) expected, (JSONObject) actual, (Boolean) strictMode);
                 } else {
                     fail(strictModeMessage);
@@ -758,16 +755,16 @@ public class JSONAssertTest {
     }
 
     private void performAssertNotEqualsTestForMessageVerification(
-        Object expected,
-        Object actual,
-        Object strictMode)
-        throws JSONException {
+            Object expected,
+            Object actual,
+            Object strictMode)
+            throws JSONException {
 
         String message = "Message";
         String testShouldFailMessage = "The test should fail so that the message in AssertionError could be verified.";
         String strictModeMessage = "strictMode must be an instance of JSONCompareMode or Boolean";
         boolean assertEqualsFailed = true;
-        if(expected instanceof String && actual instanceof String && strictMode instanceof JSONComparator) {
+        if (expected instanceof String && actual instanceof String && strictMode instanceof JSONComparator) {
             try {
                 JSONAssert.assertNotEquals(message, (String) expected, (String) actual, (JSONComparator) strictMode);
                 assertEqualsFailed = false;
@@ -775,12 +772,11 @@ public class JSONAssertTest {
             } catch (AssertionError ae) {
                 handleAssertionError(message, assertEqualsFailed, ae);
             }
-        }
-        else if(expected instanceof String && actual instanceof JSONArray) {
+        } else if (expected instanceof String && actual instanceof JSONArray) {
             try {
-                if(strictMode instanceof JSONCompareMode) {
+                if (strictMode instanceof JSONCompareMode) {
                     JSONAssert.assertNotEquals(message, (String) expected, (JSONArray) actual, (JSONCompareMode) strictMode);
-                } else if(strictMode instanceof Boolean) {
+                } else if (strictMode instanceof Boolean) {
                     JSONAssert.assertNotEquals(message, (String) expected, (JSONArray) actual, (Boolean) strictMode);
                 } else {
                     fail(strictModeMessage);
@@ -790,11 +786,11 @@ public class JSONAssertTest {
             } catch (AssertionError ae) {
                 handleAssertionError(message, assertEqualsFailed, ae);
             }
-        } else if(expected instanceof JSONArray && actual instanceof JSONArray) {
+        } else if (expected instanceof JSONArray && actual instanceof JSONArray) {
             try {
-                if(strictMode instanceof JSONCompareMode) {
+                if (strictMode instanceof JSONCompareMode) {
                     JSONAssert.assertNotEquals(message, (JSONArray) expected, (JSONArray) actual, (JSONCompareMode) strictMode);
-                } else if(strictMode instanceof Boolean) {
+                } else if (strictMode instanceof Boolean) {
                     JSONAssert.assertNotEquals(message, (JSONArray) expected, (JSONArray) actual, (Boolean) strictMode);
                 } else {
                     fail(strictModeMessage);
@@ -804,11 +800,11 @@ public class JSONAssertTest {
             } catch (AssertionError ae) {
                 handleAssertionError(message, assertEqualsFailed, ae);
             }
-        } else if(expected instanceof String && actual instanceof String) {
+        } else if (expected instanceof String && actual instanceof String) {
             try {
-                if(strictMode instanceof JSONCompareMode) {
+                if (strictMode instanceof JSONCompareMode) {
                     JSONAssert.assertNotEquals(message, (String) expected, (String) actual, (JSONCompareMode) strictMode);
-                } else if(strictMode instanceof Boolean) {
+                } else if (strictMode instanceof Boolean) {
                     JSONAssert.assertNotEquals(message, (String) expected, (String) actual, (Boolean) strictMode);
                 } else {
                     fail(strictModeMessage);
@@ -818,11 +814,11 @@ public class JSONAssertTest {
             } catch (AssertionError ae) {
                 handleAssertionError(message, assertEqualsFailed, ae);
             }
-        } else if(expected instanceof String && actual instanceof JSONObject) {
+        } else if (expected instanceof String && actual instanceof JSONObject) {
             try {
-                if(strictMode instanceof JSONCompareMode) {
+                if (strictMode instanceof JSONCompareMode) {
                     JSONAssert.assertNotEquals(message, (String) expected, (JSONObject) actual, (JSONCompareMode) strictMode);
-                } else if(strictMode instanceof Boolean) {
+                } else if (strictMode instanceof Boolean) {
                     JSONAssert.assertNotEquals(message, (String) expected, (JSONObject) actual, (Boolean) strictMode);
                 } else {
                     fail(strictModeMessage);
@@ -832,11 +828,11 @@ public class JSONAssertTest {
             } catch (AssertionError ae) {
                 handleAssertionError(message, assertEqualsFailed, ae);
             }
-        } else if(expected instanceof JSONObject && actual instanceof JSONObject) {
+        } else if (expected instanceof JSONObject && actual instanceof JSONObject) {
             try {
-                if(strictMode instanceof JSONCompareMode) {
+                if (strictMode instanceof JSONCompareMode) {
                     JSONAssert.assertNotEquals(message, (JSONObject) expected, (JSONObject) actual, (JSONCompareMode) strictMode);
-                } else if(strictMode instanceof Boolean) {
+                } else if (strictMode instanceof Boolean) {
                     JSONAssert.assertNotEquals(message, (JSONObject) expected, (JSONObject) actual, (Boolean) strictMode);
                 } else {
                     fail(strictModeMessage);
@@ -852,7 +848,7 @@ public class JSONAssertTest {
     }
 
     private void handleAssertionError(String message, boolean assertEqualsFailed, AssertionError ae) throws AssertionError {
-        if(assertEqualsFailed) {
+        if (assertEqualsFailed) {
             verifyErrorMessage(message, ae);
         } else {
             throw ae;

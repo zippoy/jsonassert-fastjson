@@ -1,6 +1,18 @@
 Changelog
 =========
 
+version 2.0.0 - 10/10/2019 (init_fix):
+-------------------------
+ - add ignore path list in the class of DefaultComparator
+ - rename all fields in the class of FieldComparisonFailure
+ - add the class of ComplexComparator
+ - fix any bugs
+
+version 1.5.0 - 10/10/2019 (init):
+-------------------------
+ - change android-json to fastjson
+ - groupId and artifactId are changed
+
 Version 1.5.0 - 3/19/2017
 -------------------------
  - JSONassert now supports user-supplied error messages (thanks yasin3061@!)

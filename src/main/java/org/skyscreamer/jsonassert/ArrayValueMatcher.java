@@ -196,7 +196,7 @@ public class ArrayValueMatcher<T> implements LocationAwareValueMatcher<T> {
 	}
 
 	@Override
-	public boolean equal(String prefix, T actual, T expected, JSONCompareResult result) {
+	public boolean equal(String path, T actual, T expected, JSONCompareResult result) {
 		if (!(actual instanceof JSONArray)) {
 			throw new IllegalArgumentException("ArrayValueMatcher applied to non-array actual value");
 		}
@@ -207,7 +207,7 @@ public class ArrayValueMatcher<T> implements LocationAwareValueMatcher<T> {
 			int last = Math.min(actualArray.size() - 1, to);
 			int expectedLen = expectedArray.size();
 			for (int i = first; i <= last; i++) {
-				String elementPrefix = MessageFormat.format("{0}[{1}]", prefix, i);
+				JSONPathJoinner elementPrefix = JSONPathJoinner.ofArray(path, i);
 				Object actualElement = actualArray.get(i);
 				Object expectedElement = expectedArray.get((i - first) % expectedLen);
 				comparator.compareValues(elementPrefix, expectedElement, actualElement, result);

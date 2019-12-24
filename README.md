@@ -16,18 +16,12 @@ Supported test frameworks:
 Branch
 -------
 
-init_fix:
- * add ignore path list in the class of DefaultComparator
- * rename all fields in the class of FieldComparisonFailure
- * add the class of ComplexComparator
- * fix any bugs
-
-init:
+version 1.5.0 - 10/10/2019 (init):
  * change [com.vaadin.external.google:android-json](http://search.maven.org/#artifactdetails%7Ccom.vaadin.external.google%7Candroid-json%7C0.0.20131108.vaadin1%7Cjar) to [fastjson](https://github.com/alibaba/fastjson)
-
+ * groupId and artifactId are changed
+ 
 master_from_20191016:
  * fork from [skyscreamer/JSONassert](https://github.com/skyscreamer/JSONassert)
-
 
 Examples
 --------
@@ -88,7 +82,7 @@ Which tells you that the pets array under the friend where id=3 was supposed to 
 QuickStart
 ----------
 
-To use, [download the JAR](https://github.com/skyscreamer/JSONassert/releases) or add the following to your project's pom.xml:
+To use, [download the JAR](https://github.com/zippoy/jsonassert-fastjson/releases) or add the following to your project's pom.xml:
 
     <dependency>
         <groupId>com.zippoy</groupId>

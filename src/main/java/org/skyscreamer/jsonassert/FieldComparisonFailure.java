@@ -21,7 +21,7 @@ public class FieldComparisonFailure {
     private final String path;
     private final Object expected;
     private final Object actual;
-    private final boolean ignore;
+    //private final boolean ignore;
 
     public FieldComparisonFailure(String path, Object expected, Object actual) {
         this(path, expected, actual, false);
@@ -31,7 +31,7 @@ public class FieldComparisonFailure {
         this.path = path;
         this.expected = expected;
         this.actual = actual;
-        this.ignore = ignore;
+        //this.ignore = ignore;
     }
 
     public String getPath() {
@@ -46,8 +46,8 @@ public class FieldComparisonFailure {
         return actual;
     }
 
-    public boolean isIgnore() {
-        return ignore;
-    }
+//    public boolean isIgnore() {
+//        return ignore;
+//    }
 
 }

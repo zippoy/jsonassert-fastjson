@@ -13,13 +13,13 @@
 */
 
 /**
- * 
+ *
  */
 package org.skyscreamer.jsonassert;
 
 /**
  * A ValueMatcher extension that provides location in form of prefix to the equals method.
- * 
+ *
  * @author Duncan Mackinder
  *
  */
@@ -34,7 +34,7 @@ public interface LocationAwareValueMatcher<T> extends ValueMatcher<T> {
 	 * description for cases where expected value depends entirely or in part on
 	 * configuration of the ValueMatcher and therefore expected value passed to
 	 * this method will not give a useful indication of expected value.
-	 * 
+	 *
 	 * @param prefix
 	 *            JSON path of the JSON item being tested
 	 * @param actual

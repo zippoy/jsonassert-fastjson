@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONException;
 import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONCompareResult;
+import org.skyscreamer.jsonassert.JSONPathJoinner;
 import org.skyscreamer.jsonassert.ValueMatcherException;
 
 import java.util.Arrays;
@@ -33,25 +34,26 @@ public class CustomComparator extends DefaultComparator {
     }
 
     @Override
-    public void compareValues(String prefix, Object expectedValue, Object actualValue, JSONCompareResult result) throws JSONException {
-        Customization customization = getCustomization(prefix);
+    public void compareValues(JSONPathJoinner joinner, Object expectedValue, Object actualValue, JSONCompareResult result) throws JSONException {
+        String path = joinner.getPath();
+        Customization customization = getCustomization(path);
         if (customization != null) {
             try {
-    	        if (!customization.matches(prefix, actualValue, expectedValue, result)) {
-                    result.fail(prefix, expectedValue, actualValue);
+    	        if (!customization.matches(joinner.getPath(), actualValue, expectedValue, result)) {
+                    result.fail(joinner, expectedValue, actualValue);
                 }
             }
             catch (ValueMatcherException e) {
-                result.fail(prefix, e);
+                result.fail(joinner, e);
             }
         } else {
-            super.compareValues(prefix, expectedValue, actualValue, result);
+            super.compareValues(joinner, expectedValue, actualValue, result);
         }
     }
 
-    private Customization getCustomization(String path) {
+    private Customization getCustomization(String prefix) {
         for (Customization c : customizations) {
-            if (c.appliesToPath(path)) {
+            if (c.appliesToPath(prefix)) {
                 return c;
             }
         }

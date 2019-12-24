@@ -17,11 +17,10 @@ package org.skyscreamer.jsonassert.comparator;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import org.skyscreamer.jsonassert.JSONCompareConfig;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONCompareResult;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.skyscreamer.jsonassert.JSONPathJoinner;
 
 import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.allJSONObjects;
 import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.allSimpleValues;
@@ -32,84 +31,97 @@ import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.allSimpleVal
  */
 public class DefaultComparator extends AbstractComparator {
 
+    public static final JSONCompareConfig EMPTY_CONFIG = new JSONCompareConfig();
+
     JSONCompareMode mode;
 
     /**
-     * need ignore path list
+     *
      */
-    List<String> ignorePathList;
+    private JSONCompareConfig jsonCompareConfig;
 
     public DefaultComparator(JSONCompareMode mode) {
-        this(mode, new ArrayList(0));
+        this(mode, EMPTY_CONFIG);
     }
 
-    public DefaultComparator(JSONCompareMode mode, List<String> ignorePathList) {
+    public DefaultComparator(JSONCompareMode mode, JSONCompareConfig jsonCompareConfig) {
+        if (null == mode) {
+            throw new IllegalArgumentException("JSONCompareMode is null");
+        }
+//        if (!mode.hasStrictOrder() && (null != noStrictOrderPathList || !noStrictOrderPathList.isEmpty())) {
+//            // todo
+//        }
         this.mode = mode;
-        this.ignorePathList = ignorePathList;
+        this.jsonCompareConfig = null == jsonCompareConfig ? EMPTY_CONFIG : jsonCompareConfig;
     }
 
     @Override
-    public List<String> getIgnorePathList() {
-        return ignorePathList;
+    public JSONCompareConfig getJsonCompareConfig() {
+        if (null == jsonCompareConfig) {
+            jsonCompareConfig = EMPTY_CONFIG;
+        }
+        return jsonCompareConfig;
     }
 
     @Override
-    public void compareJSON(String prefix, JSONObject expected, JSONObject actual, JSONCompareResult result)
+    public void compareJSON(JSONPathJoinner joinner, JSONObject expected, JSONObject actual, JSONCompareResult result)
             throws JSONException {
         // Check that actual contains all the expected values
-        checkJsonObjectKeysExpectedInActual(prefix, expected, actual, result);
+        checkJsonObjectKeysExpectedInActual(joinner, expected, actual, result);
 
         // If strict, check for vice-versa
         if (!mode.isExtensible()) {
-            checkJsonObjectKeysActualInExpected(prefix, expected, actual, result);
+            checkJsonObjectKeysActualInExpected(joinner, expected, actual, result);
         }
     }
 
     @Override
-    public void compareValues(String prefix, Object expectedValue, Object actualValue, JSONCompareResult result)
+    public void compareValues(JSONPathJoinner joinner, Object expectedValue, Object actualValue, JSONCompareResult result)
             throws JSONException {
         if (expectedValue == null && actualValue == null) {
             return;
         } else if (expectedValue == null && actualValue != null) {
-            result.unexpected(prefix, actualValue);
+            result.unexpected(joinner, actualValue);
         } else if (expectedValue != null && actualValue == null) {
-            result.missing(prefix, expectedValue);
+            result.missing(joinner, expectedValue);
         } else if (areNumbers(expectedValue, actualValue)) {
             if (areNotSameDoubles(expectedValue, actualValue)) {
-                result.fail(prefix, expectedValue, actualValue);
+                result.fail(joinner, expectedValue, actualValue);
             }
         } else if (expectedValue.getClass().isAssignableFrom(actualValue.getClass())) {
             if (expectedValue instanceof JSONArray) {
-                compareJSONArray(prefix, (JSONArray) expectedValue, (JSONArray) actualValue, result);
+                compareJSONArray(joinner, (JSONArray) expectedValue, (JSONArray) actualValue, result);
             } else if (expectedValue instanceof JSONObject) {
-                compareJSON(prefix, (JSONObject) expectedValue, (JSONObject) actualValue, result);
+                compareJSON(joinner, (JSONObject) expectedValue, (JSONObject) actualValue, result);
             } else if (!expectedValue.equals(actualValue)) {
-                result.fail(prefix, expectedValue, actualValue);
+                result.fail(joinner, expectedValue, actualValue);
             }
         } else {
-            result.fail(prefix, expectedValue, actualValue);
+            result.fail(joinner, expectedValue, actualValue);
         }
     }
 
     @Override
-    public void compareJSONArray(String prefix, JSONArray expected, JSONArray actual, JSONCompareResult result)
+    public void compareJSONArray(JSONPathJoinner joinner, JSONArray expected, JSONArray actual, JSONCompareResult result)
             throws JSONException {
-        if (expected.size() != actual.size()) {
-            result.fail(prefix + "[]: Expected " + expected.size() + " values but got " + actual.size());
-            return;
-        } else if (expected.size() == 0) {
+//        if (expected.size() != actual.size()) {
+//            // TODO
+//            // result.fail(prefix + "[]: Expected " + expected.size() + " values but got " + actual.size());
+//            return;
+//        } else
+        if (expected.isEmpty() && actual.isEmpty()) {
             return; // Nothing to compare
         }
 
         if (mode.hasStrictOrder()) {
-            compareJSONArrayWithStrictOrder(prefix, expected, actual, result);
+            compareJSONArrayWithStrictOrder(joinner, expected, actual, result);
         } else if (allSimpleValues(expected)) {
-            compareJSONArrayOfSimpleValues(prefix, expected, actual, result);
+            compareJSONArrayOfSimpleValues(joinner, expected, actual, result);
         } else if (allJSONObjects(expected)) {
-            compareJSONArrayOfJsonObjects(prefix, expected, actual, result);
+            compareJSONArrayOfJsonObjects(joinner, expected, actual, result);
         } else {
             // An expensive last resort
-            recursivelyCompareJSONArray(prefix, expected, actual, result);
+            recursivelyCompareJSONArray(joinner, expected, actual, result);
         }
     }
 

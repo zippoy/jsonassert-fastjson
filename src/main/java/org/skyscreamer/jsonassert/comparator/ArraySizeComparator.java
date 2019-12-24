@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONCompareResult;
+import org.skyscreamer.jsonassert.JSONPathJoinner;
 
 import java.text.MessageFormat;
 
@@ -68,32 +69,32 @@ public class ArraySizeComparator extends DefaultComparator {
 	 * exactly that number of elements.
 	 */
 	@Override
-	public void compareJSONArray(String prefix, JSONArray expected,
-			JSONArray actual, JSONCompareResult result) throws JSONException {
-		String arrayPrefix = prefix + "[]";
+	public void compareJSONArray(JSONPathJoinner joinner, JSONArray expected,
+								 JSONArray actual, JSONCompareResult result) throws JSONException {
+		joinner.appendArray();
 		if (expected.size() < 1 || expected.size() > 2) {
 			result.fail(MessageFormat
 					.format("{0}: invalid expectation: expected array should contain either 1 or 2 elements but contains {1} elements",
-							arrayPrefix, expected.size()));
+							joinner.getPath(), expected.size()));
 			return;
 		}
 		if (!(expected.get(0) instanceof Number)) {
 			result.fail(MessageFormat
 					.format("{0}: invalid expectation: {1}expected array size ''{2}'' not a number",
-							arrayPrefix, (expected.size() == 1? "": "minimum "), expected.get(0)));
+							joinner.getPath(), (expected.size() == 1? "": "minimum "), expected.get(0)));
 			return;
 		}
 		if ((expected.size() == 2 && !(expected.get(1) instanceof Number))) {
 			result.fail(MessageFormat
 					.format("{0}: invalid expectation: maximum expected array size ''{1}'' not a number",
-							arrayPrefix, expected.get(1)));
+							joinner.getPath(), expected.get(1)));
 			return;
 		}
 		int minExpectedLength = getInt(expected, 0);
 		if (minExpectedLength < 0) {
 			result.fail(MessageFormat
 					.format("{0}: invalid expectation: minimum expected array size ''{1}'' negative",
-							arrayPrefix, minExpectedLength));
+							joinner.getPath(), minExpectedLength));
 			return;
 		}
 		int maxExpectedLength = expected.size() == 2 ? getInt(expected, 1)
@@ -101,13 +102,13 @@ public class ArraySizeComparator extends DefaultComparator {
 		if (maxExpectedLength < minExpectedLength) {
 			result.fail(MessageFormat
 					.format("{0}: invalid expectation: maximum expected array size ''{1}'' less than minimum expected array size ''{2}''",
-							arrayPrefix, maxExpectedLength, minExpectedLength));
+							joinner.getPath(), maxExpectedLength, minExpectedLength));
 			return;
 		}
 		if (actual.size() < minExpectedLength
 				|| actual.size() > maxExpectedLength) {
 			result.fail(
-					arrayPrefix,
+					joinner,
 					MessageFormat.format(
 							"array size of {0}{1} elements",
 							minExpectedLength,

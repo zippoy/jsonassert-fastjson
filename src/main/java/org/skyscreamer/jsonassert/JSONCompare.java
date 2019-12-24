@@ -21,7 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.skyscreamer.jsonassert.comparator.DefaultComparator;
 import org.skyscreamer.jsonassert.comparator.JSONComparator;
 
-import java.util.List;
+import static org.skyscreamer.jsonassert.JSONPathJoinner.EMPTY_PATH_JOINNER;
 
 /**
  * Provides API to compare two JSON entities.  This is the backend to {@link JSONAssert}, but it can
@@ -36,8 +36,8 @@ public final class JSONCompare {
         return new DefaultComparator(mode);
     }
 
-    private static JSONComparator getComparatorForMode(JSONCompareMode mode, List<String> ignorePathList) {
-        return new DefaultComparator(mode, ignorePathList);
+    private static JSONComparator getComparatorForMode(JSONCompareMode mode, JSONCompareConfig jsonCompareConfig) {
+        return new DefaultComparator(mode, jsonCompareConfig);
     }
 
     /**
@@ -54,6 +54,11 @@ public final class JSONCompare {
     public static JSONCompareResult compareJSON(String expectedStr, String actualStr, JSONComparator comparator)
             throws JSONException {
 
+        if (("".equals(expectedStr) && "".equals(actualStr)) || ("null".equals(expectedStr) && "null".equals(actualStr))) {
+            JSONCompareResult result = new JSONCompareResult();
+            return result;
+        }
+
         Object expected = null;
         Object actual = null;
         try {
@@ -66,7 +71,7 @@ public final class JSONCompare {
             actual = JSONParser.parseJSON(actualStr);
         } catch (Exception e) {
             String actualString = "{" + "\"message\":\"test Json格式有问题，解析失败\"}";
-            expected = JSONParser.parseJSON(actualString);
+            actual = JSONParser.parseJSON(actualString);
         }
 
         if ((expected instanceof JSONObject) && (actual instanceof JSONObject)) {
@@ -76,7 +81,7 @@ public final class JSONCompare {
         } else if (expected instanceof JSONAware && actual instanceof JSONAware) {
             return compareJson((JSONAware) expected, (JSONAware) actual);
         } else {
-            return new JSONCompareResult().fail("", expected, actual);
+            return new JSONCompareResult().fail(EMPTY_PATH_JOINNER, expected, actual);
         }
     }
 
@@ -123,7 +128,7 @@ public final class JSONCompare {
         final String expectedJson = expected.toJSONString();
         final String actualJson = actual.toJSONString();
         if (!expectedJson.equals(actualJson)) {
-            result.fail("$", expectedJson, actualJson);
+            result.fail(EMPTY_PATH_JOINNER, expectedJson, actualJson);
         }
         return result;
     }
@@ -177,13 +182,13 @@ public final class JSONCompare {
      * @param expectedStr    Expected JSON string
      * @param actualStr      JSON string to compare
      * @param mode           Defines comparison behavior
-     * @param ignorePathList need ignore paths
+     * @param config         some compare config
      * @return result of the comparison
      * @throws JSONException JSON parsing error
      */
-    public static JSONCompareResult compareJSON(String expectedStr, String actualStr, JSONCompareMode mode, List<String> ignorePathList)
+    public static JSONCompareResult compareJSON(String expectedStr, String actualStr, JSONCompareMode mode, JSONCompareConfig config)
             throws JSONException {
-        return compareJSON(expectedStr, actualStr, getComparatorForMode(mode, ignorePathList));
+        return compareJSON(expectedStr, actualStr, getComparatorForMode(mode, config));
     }
 
     /**
@@ -192,13 +197,13 @@ public final class JSONCompare {
      * @param expected       Expected JSONObject
      * @param actual         JSONObject to compare
      * @param mode           Defines comparison behavior
-     * @param ignorePathList need ignore paths
+     * @param config         some compare config
      * @return result of the comparison
      * @throws JSONException JSON parsing error
      */
-    public static JSONCompareResult compareJSON(JSONObject expected, JSONObject actual, JSONCompareMode mode, List<String> ignorePathList)
+    public static JSONCompareResult compareJSON(JSONObject expected, JSONObject actual, JSONCompareMode mode, JSONCompareConfig config)
             throws JSONException {
-        return compareJSON(expected, actual, getComparatorForMode(mode, ignorePathList));
+        return compareJSON(expected, actual, getComparatorForMode(mode, config));
     }
 
     /**
@@ -207,13 +212,13 @@ public final class JSONCompare {
      * @param expected       Expected JSONArray
      * @param actual         JSONArray to compare
      * @param mode           Defines comparison behavior
-     * @param ignorePathList need ignore paths
+     * @param config         some compare config
      * @return result of the comparison
      * @throws JSONException JSON parsing error
      */
-    public static JSONCompareResult compareJSON(JSONArray expected, JSONArray actual, JSONCompareMode mode, List<String> ignorePathList)
+    public static JSONCompareResult compareJSON(JSONArray expected, JSONArray actual, JSONCompareMode mode, JSONCompareConfig config)
             throws JSONException {
-        return compareJSON(expected, actual, getComparatorForMode(mode, ignorePathList));
+        return compareJSON(expected, actual, getComparatorForMode(mode, config));
     }
 
 }
