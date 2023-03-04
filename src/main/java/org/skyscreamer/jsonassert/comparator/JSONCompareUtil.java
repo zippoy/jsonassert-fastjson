@@ -90,7 +90,7 @@ public final class JSONCompareUtil {
      * @throws JSONException JSON parsing error
      */
     public static boolean isUsableAsUniqueKey(String candidate, JSONArray array) throws JSONException {
-        Set<Object> seenValues = new HashSet<Object>();
+        Set<Object> seenValues = new HashSet();
         for (int i = 0; i < array.size(); i++) {
             Object item = array.get(i);
             if (item instanceof JSONObject) {
@@ -122,9 +122,21 @@ public final class JSONCompareUtil {
     public static List<Object> jsonArrayToList(JSONArray expected) throws JSONException {
         List<Object> jsonObjects = new ArrayList<Object>(expected.size());
         for (int i = 0; i < expected.size(); ++i) {
-            jsonObjects.add(expected.get(i));
+            jsonObjects.add(getObjectOrNull(expected, i));
         }
         return jsonObjects;
+    }
+
+    /**
+     * Returns the value present in the given index position. If null value is present, it will return null
+     *
+     * @param jsonArray the JSON array to get value from
+     * @param index index of object to retrieve
+     * @return value at the given index position
+     * @throws JSONException JSON parsing error
+     */
+    public static Object getObjectOrNull(JSONArray jsonArray, int index) throws JSONException {
+        return jsonArray.size() < index ? null : jsonArray.get(index);
     }
 
     /**
@@ -137,7 +149,7 @@ public final class JSONCompareUtil {
      */
     public static boolean allSimpleValues(JSONArray array) throws JSONException {
         for (int i = 0; i < array.size(); ++i) {
-            if (!isSimpleValue(array.get(i))) {
+            if (array.size() < i && !isSimpleValue(array.get(i))) {
                 return false;
             }
         }
