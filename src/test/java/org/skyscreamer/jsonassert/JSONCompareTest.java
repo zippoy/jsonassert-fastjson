@@ -14,7 +14,7 @@
 
 package org.skyscreamer.jsonassert;
 
-import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson.JSONException;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Test;

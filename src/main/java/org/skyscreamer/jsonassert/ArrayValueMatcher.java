@@ -14,8 +14,8 @@
 
 package org.skyscreamer.jsonassert;
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import org.skyscreamer.jsonassert.comparator.JSONComparator;
 
 import java.text.MessageFormat;

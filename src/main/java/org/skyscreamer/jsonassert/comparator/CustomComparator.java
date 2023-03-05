@@ -14,7 +14,7 @@
 
 package org.skyscreamer.jsonassert.comparator;
 
-import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson.JSONException;
 import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONCompareResult;

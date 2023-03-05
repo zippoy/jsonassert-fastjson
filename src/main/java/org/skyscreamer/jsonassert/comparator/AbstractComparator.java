@@ -14,10 +14,10 @@
 
 package org.skyscreamer.jsonassert.comparator;
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONException;
-import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.JSONPath;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
 import org.skyscreamer.jsonassert.JSONCompareResult;
 
 import java.util.Collections;

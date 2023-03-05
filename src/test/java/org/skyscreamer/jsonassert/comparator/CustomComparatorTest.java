@@ -14,8 +14,8 @@
 
 package org.skyscreamer.jsonassert.comparator;
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompare;

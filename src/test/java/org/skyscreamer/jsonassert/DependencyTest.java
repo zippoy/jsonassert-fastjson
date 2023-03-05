@@ -14,7 +14,7 @@
 
 package org.skyscreamer.jsonassert;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
