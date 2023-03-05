@@ -15,11 +15,23 @@ Supported test frameworks:
 Branch
 ------
 
+init_fastjson2:
+* use fastjson2
+
+init_fastjson:
+* use fastjson 1.2.83 version
+* add the class(org.skyscreamer.jsonassert.JSONCompareConfig), more flexibility in intervening with the diff's results
+* remove the class: org.skyscreamer.jsonassert.comparator.ComplexComparator
+* fix any bugs
+
+master_merge_from_ori_20230304:
+* merge code from [skyscreamer/JSONassert](https://github.com/skyscreamer/JSONassert)
+
 init_fix:
 
 * add ignore path list in the class of DefaultComparator
 * rename all fields in the class of FieldComparisonFailure
-* add the class of ComplexComparator
+* add the class of org.skyscreamer.jsonassert.comparator.ComplexComparator
 * fix any bugs
 
 init:

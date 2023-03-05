@@ -69,30 +69,30 @@ public class JSONAssertTest {
 
     @Test
     public void testSimple() throws JSONException {
-        testPass("{id:1}", "{id:1}", STRICT);
-        testFail("{id:1}", "{id:2}", STRICT);
-        testPass("{id:1}", "{id:1}", LENIENT);
-        testFail("{id:1}", "{id:2}", LENIENT);
-        testPass("{id:1}", "{id:1}", NON_EXTENSIBLE);
-        testFail("{id:1}", "{id:2}", NON_EXTENSIBLE);
-        testPass("{id:1}", "{id:1}", STRICT_ORDER);
-        testFail("{id:1}", "{id:2}", STRICT_ORDER);
+        testPass("{\"id\":1}", "{\"id\":1}", STRICT);
+        testFail("{\"id\":1}", "{\"id\":2}", STRICT);
+        testPass("{\"id\":1}", "{\"id\":1}", LENIENT);
+        testFail("{\"id\":1}", "{\"id\":2}", LENIENT);
+        testPass("{\"id\":1}", "{\"id\":1}", NON_EXTENSIBLE);
+        testFail("{\"id\":1}", "{\"id\":2}", NON_EXTENSIBLE);
+        testPass("{\"id\":1}", "{\"id\":1}", STRICT_ORDER);
+        testFail("{\"id\":1}", "{\"id\":2}", STRICT_ORDER);
     }
 
     @Test
     public void testSimpleStrict() throws JSONException {
-        testPass("{id:1}", "{id:1,name:\"Joe\"}", LENIENT);
-        testFail("{id:1}", "{id:1,name:\"Joe\"}", STRICT);
-        testPass("{id:1}", "{id:1,name:\"Joe\"}", STRICT_ORDER);
-        testFail("{id:1}", "{id:1,name:\"Joe\"}", NON_EXTENSIBLE);
+        testPass("{\"id\":1}", "{\"id\":1,\"name\":\"Joe\"}", LENIENT);
+        testFail("{\"id\":1}", "{\"id\":1,\"name\":\"Joe\"}", STRICT);
+        testPass("{\"id\":1}", "{\"id\":1,\"name\":\"Joe\"}", STRICT_ORDER);
+        testFail("{\"id\":1}", "{\"id\":1,\"name\":\"Joe\"}", NON_EXTENSIBLE);
     }
 
     @Test
     public void testReversed() throws JSONException {
-        testPass("{name:\"Joe\",id:1}", "{id:1,name:\"Joe\"}", LENIENT);
-        testPass("{name:\"Joe\",id:1}", "{id:1,name:\"Joe\"}", STRICT);
-        testPass("{name:\"Joe\",id:1}", "{id:1,name:\"Joe\"}", NON_EXTENSIBLE);
-        testPass("{name:\"Joe\",id:1}", "{id:1,name:\"Joe\"}", STRICT_ORDER);
+        testPass("{\"name\":\"Joe\",\"id\":1}", "{\"id\":1,\"name\":\"Joe\"}", LENIENT);
+        testPass("{\"name\":\"Joe\",\"id\":1}", "{\"id\":1,\"name\":\"Joe\"}", STRICT);
+        testPass("{\"name\":\"Joe\",\"id\":1}", "{\"id\":1,\"name\":\"Joe\"}", NON_EXTENSIBLE);
+        testPass("{\"name\":\"Joe\",\"id\":1}", "{\"id\":1,\"name\":\"Joe\"}", STRICT_ORDER);
     }
 
     @Test // Currently JSONAssert assumes JSONObject.
@@ -109,10 +109,10 @@ public class JSONAssertTest {
 
     @Test
     public void testNested() throws JSONException {
-        testPass("{id:1,address:{addr1:\"123 Main\", addr2:null, city:\"Houston\", state:\"TX\"}}",
-                "{id:1,address:{addr1:\"123 Main\", addr2:null, city:\"Houston\", state:\"TX\"}}", STRICT);
-        testFail("{id:1,address:{addr1:\"123 Main\", addr2:null, city:\"Houston\", state:\"TX\"}}",
-                "{id:1,address:{addr1:\"123 Main\", addr2:null, city:\"Austin\", state:\"TX\"}}", STRICT);
+        testPass("{\"id\":1,\"address\":{addr1:\"123 Main\", addr2:null, city:\"Houston\", state:\"TX\"}}",
+                "{\"id\":1,\"address\":{addr1:\"123 Main\", addr2:null, city:\"Houston\", state:\"TX\"}}", STRICT);
+        testFail("{\"id\":1,\"address\":{addr1:\"123 Main\", addr2:null, city:\"Houston\", state:\"TX\"}}",
+                "{\"id\":1,\"address\":{addr1:\"123 Main\", addr2:null, city:\"Austin\", state:\"TX\"}}", STRICT);
     }
 
     @Test
@@ -125,108 +125,108 @@ public class JSONAssertTest {
 
     @Test
     public void testSimpleArray() throws JSONException {
-        testPass("{id:1,pets:[\"dog\",\"cat\",\"fish\"]}", // Exact to exact (strict)
-                "{id:1,pets:[\"dog\",\"cat\",\"fish\"]}",
+        testPass("{\"id\":1,\"pets\":[\"dog\",\"cat\",\"fish\"]}", // Exact to exact (strict)
+                "{\"id\":1,\"pets\":[\"dog\",\"cat\",\"fish\"]}",
                 STRICT);
-        testFail("{id:1,pets:[\"dog\",\"cat\",\"fish\"]}", // Out-of-order fails (strict)
-                "{id:1,pets:[\"dog\",\"fish\",\"cat\"]}",
+        testFail("{\"id\":1,\"pets\":[\"dog\",\"cat\",\"fish\"]}", // Out-of-order fails (strict)
+                "{\"id\":1,\"pets\":[\"dog\",\"fish\",\"cat\"]}",
                 STRICT);
-        testPass("{id:1,pets:[\"dog\",\"cat\",\"fish\"]}", // Out-of-order ok
-                "{id:1,pets:[\"dog\",\"fish\",\"cat\"]}",
+        testPass("{\"id\":1,\"pets\":[\"dog\",\"cat\",\"fish\"]}", // Out-of-order ok
+                "{\"id\":1,\"pets\":[\"dog\",\"fish\",\"cat\"]}",
                 LENIENT);
-        testPass("{id:1,pets:[\"dog\",\"cat\",\"fish\"]}", // Out-of-order ok
-                "{id:1,pets:[\"dog\",\"fish\",\"cat\"]}",
+        testPass("{\"id\":1,\"pets\":[\"dog\",\"cat\",\"fish\"]}", // Out-of-order ok
+                "{\"id\":1,\"pets\":[\"dog\",\"fish\",\"cat\"]}",
                 NON_EXTENSIBLE);
-        testFail("{id:1,pets:[\"dog\",\"cat\",\"fish\"]}", // Out-of-order fails (strict order)
-                "{id:1,pets:[\"dog\",\"fish\",\"cat\"]}",
+        testFail("{\"id\":1,\"pets\":[\"dog\",\"cat\",\"fish\"]}", // Out-of-order fails (strict order)
+                "{\"id\":1,\"pets\":[\"dog\",\"fish\",\"cat\"]}",
                 STRICT_ORDER);
-        testFail("{id:1,pets:[\"dog\",\"cat\",\"fish\"]}", // Mismatch
-                "{id:1,pets:[\"dog\",\"cat\",\"bird\"]}",
+        testFail("{\"id\":1,\"pets\":[\"dog\",\"cat\",\"fish\"]}", // Mismatch
+                "{\"id\":1,\"pets\":[\"dog\",\"cat\",\"bird\"]}",
                 STRICT);
-        testFail("{id:1,pets:[\"dog\",\"cat\",\"fish\"]}", // Mismatch
-                "{id:1,pets:[\"dog\",\"cat\",\"bird\"]}",
+        testFail("{\"id\":1,\"pets\":[\"dog\",\"cat\",\"fish\"]}", // Mismatch
+                "{\"id\":1,\"pets\":[\"dog\",\"cat\",\"bird\"]}",
                 LENIENT);
-        testFail("{id:1,pets:[\"dog\",\"cat\",\"fish\"]}", // Mismatch
-                "{id:1,pets:[\"dog\",\"cat\",\"bird\"]}",
+        testFail("{\"id\":1,\"pets\":[\"dog\",\"cat\",\"fish\"]}", // Mismatch
+                "{\"id\":1,\"pets\":[\"dog\",\"cat\",\"bird\"]}",
                 STRICT_ORDER);
-        testFail("{id:1,pets:[\"dog\",\"cat\",\"fish\"]}", // Mismatch
-                "{id:1,pets:[\"dog\",\"cat\",\"bird\"]}",
+        testFail("{\"id\":1,\"pets\":[\"dog\",\"cat\",\"fish\"]}", // Mismatch
+                "{\"id\":1,\"pets\":[\"dog\",\"cat\",\"bird\"]}",
                 NON_EXTENSIBLE);
     }
 
     @Test
     public void testSimpleMixedArray() throws JSONException {
-        testPass("{stuff:[321, \"abc\"]}", "{stuff:[\"abc\", 321]}", LENIENT);
-        testFail("{stuff:[321, \"abc\"]}", "{stuff:[\"abc\", 789]}", LENIENT);
+        testPass("{\"stuff\":[321, \"abc\"]}", "{\"stuff\":[\"abc\", 321]}", LENIENT);
+        testFail("{\"stuff\":[321, \"abc\"]}", "{\"stuff\":[\"abc\", 789]}", LENIENT);
     }
 
     @Test
     public void testComplexMixedStrictArray() throws JSONException {
-        testPass("{stuff:[{pet:\"cat\"},{car:\"Ford\"}]}", "{stuff:[{pet:\"cat\"},{car:\"Ford\"}]}", STRICT);
+        testPass("{\"stuff\":[{pet:\"cat\"},{car:\"Ford\"}]}", "{\"stuff\":[{pet:\"cat\"},{car:\"Ford\"}]}", STRICT);
     }
 
     @Test
     public void testComplexMixedArray() throws JSONException {
-        testPass("{stuff:[{pet:\"cat\"},{car:\"Ford\"}]}", "{stuff:[{pet:\"cat\"},{car:\"Ford\"}]}", LENIENT);
+        testPass("{\"stuff\":[{pet:\"cat\"},{car:\"Ford\"}]}", "{\"stuff\":[{pet:\"cat\"},{car:\"Ford\"}]}", LENIENT);
     }
 
     @Test
     public void testComplexArrayNoUniqueID() throws JSONException {
-        testPass("{stuff:[{address:{addr1:\"123 Main\"}}, {address:{addr1:\"234 Broad\"}}]}",
-                "{stuff:[{address:{addr1:\"123 Main\"}}, {address:{addr1:\"234 Broad\"}}]}",
+        testPass("{\"stuff\":[{\"address\":{addr1:\"123 Main\"}}, {\"address\":{addr1:\"234 Broad\"}}]}",
+                "{\"stuff\":[{\"address\":{addr1:\"123 Main\"}}, {\"address\":{addr1:\"234 Broad\"}}]}",
                 LENIENT);
     }
 
     @Test
     public void testSimpleAndComplexStrictArray() throws JSONException {
-        testPass("{stuff:[123,{a:\"b\"}]}", "{stuff:[123,{a:\"b\"}]}", STRICT);
+        testPass("{\"stuff\":[123,{a:\"b\"}]}", "{\"stuff\":[123,{a:\"b\"}]}", STRICT);
     }
 
     @Test
     public void testSimpleAndComplexArray() throws JSONException {
-        testPass("{stuff:[123,{a:\"b\"}]}", "{stuff:[123,{a:\"b\"}]}", LENIENT);
+        testPass("{\"stuff\":[123,{a:\"b\"}]}", "{\"stuff\":[123,{a:\"b\"}]}", LENIENT);
     }
 
     @Test
     public void testComplexArray() throws JSONException {
-        testPass("{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
-                "{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
+        testPass("{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"bird\",\"fish\"]}],\"pets\":[]}",
+                "{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"bird\",\"fish\"]}],\"pets\":[]}",
                 STRICT); // Exact to exact (strict)
-        testFail("{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
-                "{id:1,name:\"Joe\",friends:[{id:3,name:\"Sue\",pets:[\"fish\",\"bird\"]},{id:2,name:\"Pat\",pets:[\"dog\"]}],pets:[]}",
+        testFail("{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"bird\",\"fish\"]}],\"pets\":[]}",
+                "{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":3,\"name\":\"Sue\",\"pets\":[\"fish\",\"bird\"]},{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]}],\"pets\":[]}",
                 STRICT); // Out-of-order fails (strict)
-        testFail("{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
-                "{id:1,name:\"Joe\",friends:[{id:3,name:\"Sue\",pets:[\"fish\",\"bird\"]},{id:2,name:\"Pat\",pets:[\"dog\"]}],pets:[]}",
+        testFail("{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"bird\",\"fish\"]}],\"pets\":[]}",
+                "{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":3,\"name\":\"Sue\",\"pets\":[\"fish\",\"bird\"]},{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]}],\"pets\":[]}",
                 STRICT_ORDER); // Out-of-order fails (strict order)
-        testPass("{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
-                "{id:1,name:\"Joe\",friends:[{id:3,name:\"Sue\",pets:[\"fish\",\"bird\"]},{id:2,name:\"Pat\",pets:[\"dog\"]}],pets:[]}",
+        testPass("{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"bird\",\"fish\"]}],\"pets\":[]}",
+                "{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":3,\"name\":\"Sue\",\"pets\":[\"fish\",\"bird\"]},{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]}],\"pets\":[]}",
                 LENIENT); // Out-of-order ok
-        testPass("{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
-                "{id:1,name:\"Joe\",friends:[{id:3,name:\"Sue\",pets:[\"fish\",\"bird\"]},{id:2,name:\"Pat\",pets:[\"dog\"]}],pets:[]}",
+        testPass("{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"bird\",\"fish\"]}],\"pets\":[]}",
+                "{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":3,\"name\":\"Sue\",\"pets\":[\"fish\",\"bird\"]},{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]}],\"pets\":[]}",
                 NON_EXTENSIBLE); // Out-of-order ok
-        testFail("{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
-                "{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"cat\",\"fish\"]}],pets:[]}",
+        testFail("{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"bird\",\"fish\"]}],\"pets\":[]}",
+                "{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"cat\",\"fish\"]}],\"pets\":[]}",
                 STRICT); // Mismatch (strict)
-        testFail("{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
-                "{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"cat\",\"fish\"]}],pets:[]}",
+        testFail("{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"bird\",\"fish\"]}],\"pets\":[]}",
+                "{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"cat\",\"fish\"]}],\"pets\":[]}",
                 LENIENT); // Mismatch
-        testFail("{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
-                "{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"cat\",\"fish\"]}],pets:[]}",
+        testFail("{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"bird\",\"fish\"]}],\"pets\":[]}",
+                "{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"cat\",\"fish\"]}],\"pets\":[]}",
                 STRICT_ORDER); // Mismatch
-        testFail("{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"bird\",\"fish\"]}],pets:[]}",
-                "{id:1,name:\"Joe\",friends:[{id:2,name:\"Pat\",pets:[\"dog\"]},{id:3,name:\"Sue\",pets:[\"cat\",\"fish\"]}],pets:[]}",
+        testFail("{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"bird\",\"fish\"]}],\"pets\":[]}",
+                "{\"id\":1,\"name\":\"Joe\",\"friends\":[{\"id\":2,\"name\":\"Pat\",\"pets\":[\"dog\"]},{\"id\":3,\"name\":\"Sue\",\"pets\":[\"cat\",\"fish\"]}],\"pets\":[]}",
                 NON_EXTENSIBLE); // Mismatch
     }
 
     @Test
     public void testArrayOfArraysStrict() throws JSONException {
-        testPass("{id:1,stuff:[[1,2],[2,3],[],[3,4]]}", "{id:1,stuff:[[1,2],[2,3],[],[3,4]]}", STRICT);
-        testFail("{id:1,stuff:[[1,2],[2,3],[3,4],[]]}", "{id:1,stuff:[[1,2],[2,3],[],[3,4]]}", STRICT);
+        testPass("{\"id\":1,\"stuff\":[[1,2],[2,3],[],[3,4]]}", "{\"id\":1,\"stuff\":[[1,2],[2,3],[],[3,4]]}", STRICT);
+        testFail("{\"id\":1,\"stuff\":[[1,2],[2,3],[3,4],[]]}", "{\"id\":1,\"stuff\":[[1,2],[2,3],[],[3,4]]}", STRICT);
     }
 
     @Test
     public void testArrayOfArrays() throws JSONException {
-        testPass("{id:1,stuff:[[4,3],[3,2],[],[1,2]]}", "{id:1,stuff:[[1,2],[2,3],[],[3,4]]}", LENIENT);
+        testPass("{\"id\":1,\"stuff\":[[4,3],[3,2],[],[1,2]]}", "{\"id\":1,\"stuff\":[[1,2],[2,3],[],[3,4]]}", LENIENT);
     }
 
     @Test
@@ -236,7 +236,7 @@ public class JSONAssertTest {
 
     @Test
     public void testFieldMismatch() throws JSONException {
-        JSONCompareResult result = JSONCompare.compareJSON("{name:\"Pat\"}", "{name:\"Sue\"}", STRICT);
+        JSONCompareResult result = JSONCompare.compareJSON("{\"name\":\"Pat\"}", "{\"name\":\"Sue\"}", STRICT);
         FieldComparisonFailure comparisonFailure = result.getFieldDiffs().iterator().next();
         Assert.assertEquals("Pat", comparisonFailure.getExpected());
         Assert.assertEquals("Sue", comparisonFailure.getActual());
@@ -254,29 +254,29 @@ public class JSONAssertTest {
 
     @Test
     public void testNullProperty() throws JSONException {
-        testFail("{id:1,name:\"Joe\"}", "{id:1,name:null}", STRICT);
-        testFail("{id:1,name:null}", "{id:1,name:\"Joe\"}", STRICT);
+        testFail("{\"id\":1,\"name\":\"Joe\"}", "{\"id\":1,\"name\":null}", STRICT);
+        testFail("{\"id\":1,\"name\":null}", "{\"id\":1,\"name\":\"Joe\"}", STRICT);
     }
 
     @Test
     public void testIncorrectTypes() throws JSONException {
-        testFail("{id:1,name:\"Joe\"}", "{id:1,name:[]}", STRICT);
-        testFail("{id:1,name:[]}", "{id:1,name:\"Joe\"}", STRICT);
+        testFail("{\"id\":1,\"name\":\"Joe\"}", "{\"id\":1,\"name\":[]}", STRICT);
+        testFail("{\"id\":1,\"name\":[]}", "{\"id\":1,\"name\":\"Joe\"}", STRICT);
     }
 
     @Test
     public void testNullEquality() throws JSONException {
-        testPass("{id:1,name:null}", "{id:1,name:null}", STRICT);
+        testPass("{\"id\":1,\"name\":null}", "{\"id\":1,\"name\":null}", STRICT);
     }
 
     @Test
     public void testExpectedArrayButActualObject() throws JSONException {
-        testFail("[1]", "{id:1}", LENIENT);
+        testFail("[1]", "{\"id\":1}", LENIENT);
     }
 
     @Test
     public void testExpectedObjectButActualArray() throws JSONException {
-        testFail("{id:1}", "[1]", LENIENT);
+        testFail("{\"id\":1}", "[1]", LENIENT);
     }
 
     @Test
@@ -367,18 +367,18 @@ public class JSONAssertTest {
     @Test()
     public void testAssertEqualsString() throws JSONException {
         JSONAssert.assertEquals("[1,2,3]", "[1,2,3]", true);
-        JSONAssert.assertEquals("{id:12345}", "{id:12345}", false);
-        JSONAssert.assertEquals("{id:12345}", "{id:12345, name:\"john\"}", LENIENT);
-        JSONAssert.assertEquals("{id:12345}", "{id:12345}", LENIENT);
-        JSONAssert.assertEquals("{id:12345}", "{id:12345, name:\"john\"}", LENIENT);
+        JSONAssert.assertEquals("{\"id\":12345}", "{\"id\":12345}", false);
+        JSONAssert.assertEquals("{\"id\":12345}", "{\"id\":12345, \"name\":\"john\"}", LENIENT);
+        JSONAssert.assertEquals("{\"id\":12345}", "{\"id\":12345}", LENIENT);
+        JSONAssert.assertEquals("{\"id\":12345}", "{\"id\":12345, \"name\":\"john\"}", LENIENT);
     }
 
     @Test()
     public void testAssertNotEqualsStringAndJSONObject() throws JSONException {
         JSONObject actual = new JSONObject();
         actual.put("id", Double.valueOf(12345));
-        JSONAssert.assertEquals("{id:12345}", actual, false);
-        JSONAssert.assertNotEquals("{id:12346}", actual, false);
+        JSONAssert.assertEquals("{\"id\":12345}", actual, false);
+        JSONAssert.assertNotEquals("{\"id\":12346}", actual, false);
     }
 
     private List<Object> buildJSONArray(int... vals) {
@@ -435,28 +435,28 @@ public class JSONAssertTest {
 
     @Test
     public void testAssertEqualsString2Boolean() throws JSONException {
-        JSONAssert.assertEquals("Message", "{id:12345}", "{id:12345}", false);
-        JSONAssert.assertEquals("Message", "{id:12345}", "{id:12345, name:\"john\"}", false);
+        JSONAssert.assertEquals("Message", "{\"id\":12345}", "{\"id\":12345}", false);
+        JSONAssert.assertEquals("Message", "{\"id\":12345}", "{\"id\":12345, \"name\":\"john\"}", false);
 
-        performAssertEqualsTestForMessageVerification("{id:12345}", "{id:12345, name:\"john\"}", true);
-        performAssertEqualsTestForMessageVerification("{id:12345}", "{id:123456}", false);
+        performAssertEqualsTestForMessageVerification("{\"id\":12345}", "{\"id\":12345, \"name\":\"john\"}", true);
+        performAssertEqualsTestForMessageVerification("{\"id\":12345}", "{\"id\":123456}", false);
     }
 
     @Test
     public void testAssertEqualsString2JSONCompare() throws JSONException {
-        JSONAssert.assertEquals("Message", "{id:12345}", "{id:12345}", LENIENT);
-        JSONAssert.assertEquals("Message", "{id:12345}", "{id:12345, name:\"john\"}", LENIENT);
+        JSONAssert.assertEquals("Message", "{\"id\":12345}", "{\"id\":12345}", LENIENT);
+        JSONAssert.assertEquals("Message", "{\"id\":12345}", "{\"id\":12345, \"name\":\"john\"}", LENIENT);
 
-        performAssertEqualsTestForMessageVerification("{id:12345}", "{id:12345, name:\"john\"}", STRICT);
-        performAssertEqualsTestForMessageVerification("{id:12345}", "{id:123456}", LENIENT);
+        performAssertEqualsTestForMessageVerification("{\"id\":12345}", "{\"id\":12345, \"name\":\"john\"}", STRICT);
+        performAssertEqualsTestForMessageVerification("{\"id\":12345}", "{\"id\":123456}", LENIENT);
     }
 
     @Test
     public void testAssertEqualsStringJSONObjectBoolean() throws JSONException {
         JSONObject actual = new JSONObject();
         actual.put("id", Double.valueOf(12345));
-        JSONAssert.assertEquals("Message", "{id:12345}", actual, false);
-        performAssertEqualsTestForMessageVerification("{id:12346}", actual, false);
+        JSONAssert.assertEquals("Message", "{\"id\":12345}", actual, false);
+        performAssertEqualsTestForMessageVerification("{\"id\":12346}", actual, false);
         performAssertEqualsTestForMessageVerification("[1,2,3]", "[1,3,2]", true);
     }
 
@@ -464,8 +464,8 @@ public class JSONAssertTest {
     public void testAssertEqualsStringJSONObjectJSONCompare() throws JSONException {
         JSONObject actual = new JSONObject();
         actual.put("id", Double.valueOf(12345));
-        JSONAssert.assertEquals("Message", "{id:12345}", actual, LENIENT);
-        performAssertEqualsTestForMessageVerification("{id:12346}", actual, LENIENT);
+        JSONAssert.assertEquals("Message", "{\"id\":12345}", actual, LENIENT);
+        performAssertEqualsTestForMessageVerification("{\"id\":12346}", actual, LENIENT);
         performAssertEqualsTestForMessageVerification("[1,2,3]", "[1,3,2]", STRICT);
     }
 
@@ -518,7 +518,7 @@ public class JSONAssertTest {
         performAssertEqualsTestForMessageVerification("{\"entry\":{\"id\":x}}", "{\"entry\":{\"id\":1, \"id\":as}}",
                 new CustomComparator(
                         JSONCompareMode.STRICT,
-                        new Customization("entry.id",
+                        new Customization("$.entry.id",
                                 new RegularExpressionValueMatcher("\\d"))
                 ));
     }
@@ -560,28 +560,28 @@ public class JSONAssertTest {
 
     @Test
     public void testAssertNotEqualsString2Boolean() throws JSONException {
-        JSONAssert.assertNotEquals("Message", "{id:12345}", "{id:45}", false);
-        JSONAssert.assertNotEquals("Message", "{id:12345}", "{id:345, name:\"john\"}", false);
+        JSONAssert.assertNotEquals("Message", "{\"id\":12345}", "{\"id\":45}", false);
+        JSONAssert.assertNotEquals("Message", "{\"id\":12345}", "{\"id\":345, \"name\":\"john\"}", false);
 
-        performAssertNotEqualsTestForMessageVerification("{id:12345}", "{id:12345}", true);
-        performAssertNotEqualsTestForMessageVerification("{id:12345}", "{id:12345, name:\"John\"}", false);
+        performAssertNotEqualsTestForMessageVerification("{\"id\":12345}", "{\"id\":12345}", true);
+        performAssertNotEqualsTestForMessageVerification("{\"id\":12345}", "{\"id\":12345, \"name\":\"John\"}", false);
     }
 
     @Test
     public void testAssertNotEqualsString2JSONCompare() throws JSONException {
-        JSONAssert.assertNotEquals("Message", "{id:12345}", "{id:123}", LENIENT);
-        JSONAssert.assertNotEquals("Message", "{id:12345, name:\"John\"}", "{id:12345}", LENIENT);
+        JSONAssert.assertNotEquals("Message", "{\"id\":12345}", "{\"id\":123}", LENIENT);
+        JSONAssert.assertNotEquals("Message", "{\"id\":12345, \"name\":\"John\"}", "{\"id\":12345}", LENIENT);
 
-        performAssertNotEqualsTestForMessageVerification("{id:12345}", "{id:12345, name:\"john\"}", LENIENT);
-        performAssertNotEqualsTestForMessageVerification("{id:12345}", "{id:12345}", STRICT);
+        performAssertNotEqualsTestForMessageVerification("{\"id\":12345}", "{\"id\":12345, \"name\":\"john\"}", LENIENT);
+        performAssertNotEqualsTestForMessageVerification("{\"id\":12345}", "{\"id\":12345}", STRICT);
     }
 
     @Test
     public void testAssertNotEqualsStringJSONObjectBoolean() throws JSONException {
         JSONObject actual = new JSONObject();
         actual.put("id", Double.valueOf(12345));
-        JSONAssert.assertNotEquals("Message", "{id:1234}", actual, false);
-        performAssertNotEqualsTestForMessageVerification("{id:12345}", actual, false);
+        JSONAssert.assertNotEquals("Message", "{\"id\":1234}", actual, false);
+        performAssertNotEqualsTestForMessageVerification("{\"id\":12345}", actual, false);
         performAssertNotEqualsTestForMessageVerification("[1,2,3]", "[1,2,3]", true);
     }
 
@@ -589,8 +589,8 @@ public class JSONAssertTest {
     public void testAssertNotEqualsStringJSONObjectJSONCompare() throws JSONException {
         JSONObject actual = new JSONObject();
         actual.put("id", Double.valueOf(12345));
-        JSONAssert.assertNotEquals("Message", "{id:1234}", actual, LENIENT);
-        performAssertNotEqualsTestForMessageVerification("{id:12345}", actual, LENIENT);
+        JSONAssert.assertNotEquals("Message", "{\"id\":1234}", actual, LENIENT);
+        performAssertNotEqualsTestForMessageVerification("{\"id\":12345}", actual, LENIENT);
         performAssertNotEqualsTestForMessageVerification("[1,2,3]", "[1,2,3]", STRICT);
     }
 
