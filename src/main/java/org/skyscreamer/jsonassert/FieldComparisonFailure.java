@@ -18,24 +18,24 @@ package org.skyscreamer.jsonassert;
  * Models a failure when comparing two fields.
  */
 public class FieldComparisonFailure {
-    private final String path;
+    private final String jsonPath;
     private final Object expected;
     private final Object actual;
     private final boolean ignore;
 
-    public FieldComparisonFailure(String path, Object expected, Object actual) {
-        this(path, expected, actual, false);
+    public FieldComparisonFailure(String jsonPath, Object expected, Object actual) {
+        this(jsonPath, expected, actual, false);
     }
 
-    public FieldComparisonFailure(String path, Object expected, Object actual, boolean ignore) {
-        this.path = path;
+    public FieldComparisonFailure(String jsonPath, Object expected, Object actual, boolean ignore) {
+        this.jsonPath = jsonPath;
         this.expected = expected;
         this.actual = actual;
         this.ignore = ignore;
     }
 
-    public String getPath() {
-        return path;
+    public String getJsonPath() {
+        return jsonPath;
     }
 
     public Object getExpected() {

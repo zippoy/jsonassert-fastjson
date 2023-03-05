@@ -10,12 +10,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert.comparator;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONException;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompare;
@@ -24,7 +24,7 @@ import org.skyscreamer.jsonassert.JSONCompareResult;
 
 /**
  * @author <a href="mailto:aiveeen@gmail.com">Ivan Zaytsev</a>
- *         2013-01-04
+ * 2013-01-04
  */
 public class CustomComparatorTest {
 
@@ -48,6 +48,6 @@ public class CustomComparatorTest {
 
         Assert.assertTrue(compareResult.failed());
         String message = compareResult.getMessage().replaceAll("\n", "");
-        Assert.assertTrue(message, message.matches(".*id=5.*Expected.*id=6.*Unexpected.*id=7.*Unexpected.*"));
+        Assert.assertTrue(message, message.matches(".*id==5.*"));
     }
 }

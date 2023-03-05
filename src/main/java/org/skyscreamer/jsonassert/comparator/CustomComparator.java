@@ -10,11 +10,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert.comparator;
 
-import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson2.JSONException;
 import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONCompareResult;
@@ -27,25 +27,24 @@ public class CustomComparator extends DefaultComparator {
 
     private final Collection<Customization> customizations;
 
-    public CustomComparator(JSONCompareMode mode,  Customization... customizations) {
+    public CustomComparator(JSONCompareMode mode, Customization... customizations) {
         super(mode);
         this.customizations = Arrays.asList(customizations);
     }
 
     @Override
-    public void compareValues(String prefix, Object expectedValue, Object actualValue, JSONCompareResult result) throws JSONException {
-        Customization customization = getCustomization(prefix);
+    public void compareValues(String jsonPath, Object expectedValue, Object actualValue, JSONCompareResult result) throws JSONException {
+        Customization customization = getCustomization(jsonPath);
         if (customization != null) {
             try {
-    	        if (!customization.matches(prefix, actualValue, expectedValue, result)) {
-                    result.fail(prefix, expectedValue, actualValue);
+                if (!customization.matches(jsonPath, actualValue, expectedValue, result)) {
+                    result.fail(jsonPath, expectedValue, actualValue);
                 }
-            }
-            catch (ValueMatcherException e) {
-                result.fail(prefix, e);
+            } catch (ValueMatcherException e) {
+                result.fail(jsonPath, e);
             }
         } else {
-            super.compareValues(prefix, expectedValue, actualValue, result);
+            super.compareValues(jsonPath, expectedValue, actualValue, result);
         }
     }
 

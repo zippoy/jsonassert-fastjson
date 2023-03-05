@@ -10,11 +10,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert;
 
-import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson2.JSONException;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Test;

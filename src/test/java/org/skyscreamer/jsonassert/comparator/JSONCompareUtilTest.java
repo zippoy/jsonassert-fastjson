@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert.comparator;
 
@@ -36,7 +36,7 @@ public class JSONCompareUtilTest {
         final int NUM_D = 1;
         final int NUM_E = 2;
 
-        List<String> listToTest = new ArrayList<String>(NUM_A + NUM_B + NUM_C + NUM_D + NUM_E);
+        List<String> listToTest = new ArrayList(NUM_A + NUM_B + NUM_C + NUM_D + NUM_E);
         for (int i = 0; i < NUM_A; ++i) listToTest.add("A");
         for (int i = 0; i < NUM_B; ++i) listToTest.add("B");
         for (int i = 0; i < NUM_C; ++i) listToTest.add("C");
@@ -44,11 +44,11 @@ public class JSONCompareUtilTest {
         for (int i = 0; i < NUM_E; ++i) listToTest.add("E");
         Collections.shuffle(listToTest);
 
-        Map<String, Integer> cardinalityMap = JSONCompareUtil.getCardinalityMap(listToTest);
-        Assert.assertEquals(NUM_A, cardinalityMap.get("A").intValue());
-        Assert.assertEquals(NUM_B, cardinalityMap.get("B").intValue());
+        Map<String, List<Integer>> cardinalityMap = JSONCompareUtil.getJSONArrayIndexGroup(listToTest);
+        Assert.assertEquals(NUM_A, cardinalityMap.get("A").size());
+        Assert.assertEquals(NUM_B, cardinalityMap.get("B").size());
         Assert.assertNull(cardinalityMap.get("C"));
-        Assert.assertEquals(NUM_D, cardinalityMap.get("D").intValue());
-        Assert.assertEquals(NUM_E, cardinalityMap.get("E").intValue());
+        Assert.assertEquals(NUM_D, cardinalityMap.get("D").size());
+        Assert.assertEquals(NUM_E, cardinalityMap.get("E").size());
     }
 }

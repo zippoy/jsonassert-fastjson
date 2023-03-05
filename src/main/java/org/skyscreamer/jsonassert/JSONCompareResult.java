@@ -14,8 +14,8 @@
 
 package org.skyscreamer.jsonassert;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,32 +26,35 @@ import java.util.List;
  */
 public class JSONCompareResult {
 
-    private boolean success;
     private StringBuilder message;
-    private final List<FieldComparisonFailure> fieldFailures = new ArrayList();
-    private final List<FieldComparisonFailure> fieldMissing = new ArrayList();
-    private final List<FieldComparisonFailure> fieldUnexpected = new ArrayList();
 
     /**
-     * 需要忽略的path
+     * 存在diff的字段
      */
-    private List<String> ignorePathList;
+    private final List<FieldComparisonFailure> diffPathInfos = new ArrayList();
+    /**
+     * 缺失的字段
+     */
+    private final List<FieldComparisonFailure> missingPathInfos = new ArrayList();
+    /**
+     * 扩展的字段
+     */
+    private final List<FieldComparisonFailure> extraPathInfos = new ArrayList();
+
+    /**
+     * 其它一些无法预知的问题
+     */
+//    private List<FieldComparisonFailure> otherErrors = new ArrayList<>();
 
     /**
      * Default constructor.
      */
     public JSONCompareResult() {
-        this(true, null, null);
+        this("");
     }
 
-    public JSONCompareResult(List<String> ignorePathList) {
-        this(true, null, ignorePathList);
-    }
-
-    private JSONCompareResult(boolean success, String message, List<String> ignorePathList) {
-        this.success = success;
+    private JSONCompareResult(String message) {
         this.message = new StringBuilder(message == null ? "" : message);
-        this.ignorePathList = ignorePathList == null ? new ArrayList(0) : ignorePathList;
     }
 
     /**
@@ -60,7 +63,7 @@ public class JSONCompareResult {
      * @return True if it passed
      */
     public boolean passed() {
-        return success;
+        return diffPathInfos.isEmpty() && missingPathInfos.isEmpty() && extraPathInfos.isEmpty();
     }
 
     /**
@@ -69,7 +72,7 @@ public class JSONCompareResult {
      * @return True if it failed
      */
     public boolean failed() {
-        return !success;
+        return !passed();
     }
 
     /**
@@ -86,8 +89,8 @@ public class JSONCompareResult {
      *
      * @return list of comparsion failures
      */
-    public List<FieldComparisonFailure> getFieldFailures() {
-        return Collections.unmodifiableList(fieldFailures);
+    public List<FieldComparisonFailure> getFieldDiffs() {
+        return Collections.unmodifiableList(diffPathInfos);
     }
 
     /**
@@ -96,7 +99,7 @@ public class JSONCompareResult {
      * @return list of comparsion failures
      */
     public List<FieldComparisonFailure> getFieldMissing() {
-        return Collections.unmodifiableList(fieldMissing);
+        return Collections.unmodifiableList(missingPathInfos);
     }
 
     /**
@@ -105,8 +108,12 @@ public class JSONCompareResult {
      * @return list of comparsion failures
      */
     public List<FieldComparisonFailure> getFieldUnexpected() {
-        return Collections.unmodifiableList(fieldUnexpected);
+        return Collections.unmodifiableList(extraPathInfos);
     }
+
+//    public List<FieldComparisonFailure> getOtherErrors() {
+//        return otherErrors;
+//    }
 
     /**
      * Check if comparison failed on any particular fields
@@ -114,7 +121,7 @@ public class JSONCompareResult {
      * @return true if there are field failures
      */
     public boolean isFailureOnField() {
-        return !fieldFailures.isEmpty();
+        return !diffPathInfos.isEmpty();
     }
 
     /**
@@ -123,7 +130,7 @@ public class JSONCompareResult {
      * @return true if an expected field is missing
      */
     public boolean isMissingOnField() {
-        return !fieldMissing.isEmpty();
+        return !missingPathInfos.isEmpty();
     }
 
     /**
@@ -132,11 +139,10 @@ public class JSONCompareResult {
      * @return true if an unexpected field is in the result
      */
     public boolean isUnexpectedOnField() {
-        return !fieldUnexpected.isEmpty();
+        return !extraPathInfos.isEmpty();
     }
 
     public void fail(String message) {
-        this.success = false;
         if (message.length() == 0) {
             this.message.append(message);
         } else {
@@ -147,34 +153,45 @@ public class JSONCompareResult {
     /**
      * Identify that the comparison failed
      *
-     * @param field    Which field failed
+     * @param jsonPath    Which field failed
      * @param expected Expected result
      * @param actual   Actual result
      * @return result of comparision
      */
-    public JSONCompareResult fail(String field, Object expected, Object actual) {
-        if (isFilter(field, ignorePathList)) {
-            return this;
-        }
-        this.fieldFailures.add(new FieldComparisonFailure(field, expected, actual));
-        fail(formatFailureMessage(field, expected, actual));
+    public JSONCompareResult fail(String jsonPath, Object expected, Object actual) {
+        this.diffPathInfos.add(new FieldComparisonFailure(jsonPath, expected, actual));
+        fail(formatFailureMessage(jsonPath, expected, actual));
         return this;
     }
+
 
     /**
      * Identify that the comparison failed
      *
-     * @param field     Which field failed
+     * @param jsonPath    Which field failed
+     * @param expected Expected result
+     * @param actual   Actual result
+     * @return result of comparision
+     */
+//    public JSONCompareResult error(String jsonPath, Object expected, Object actual) {
+//        this.otherErrors.add(new FieldComparisonFailure(jsonPath, expected, actual));
+//        return this;
+//    }
+
+    /**
+     * Identify that the comparison failed
+     *
+     * @param jsonPath     Which field failed
      * @param exception exception containing details of match failure
      * @return result of comparision
      */
-    public JSONCompareResult fail(String field, ValueMatcherException exception) {
-        fail(field + ": " + exception.getMessage(), exception.getExpected(), exception.getActual());
+    public JSONCompareResult fail(String jsonPath, ValueMatcherException exception) {
+        fail(jsonPath + ": " + exception.getMessage(), exception.getExpected(), exception.getActual());
         return this;
     }
 
-    private String formatFailureMessage(String field, Object expected, Object actual) {
-        return field
+    private String formatFailureMessage(String jsonPath, Object expected, Object actual) {
+        return jsonPath
                 + "\nExpected: "
                 + describe(expected)
                 + "\n     got: "
@@ -185,21 +202,18 @@ public class JSONCompareResult {
     /**
      * Identify the missing field
      *
-     * @param field    missing field
+     * @param jsonPath    missing field
      * @param expected expected result
      * @return result of comparison
      */
-    public JSONCompareResult missing(String field, Object expected) {
-        if (isFilter(field, ignorePathList)) {
-            return this;
-        }
-        fieldMissing.add(new FieldComparisonFailure(field, expected, null));
-        fail(formatMissing(field, expected));
+    public JSONCompareResult missing(String jsonPath, Object expected) {
+        missingPathInfos.add(new FieldComparisonFailure(jsonPath, expected, null));
+        fail(formatMissing(jsonPath, expected));
         return this;
     }
 
-    private String formatMissing(String field, Object expected) {
-        return field
+    private String formatMissing(String jsonPath, Object expected) {
+        return jsonPath
                 + "\nExpected: "
                 + describe(expected)
                 + "\n     but none found\n";
@@ -208,21 +222,18 @@ public class JSONCompareResult {
     /**
      * Identify unexpected field
      *
-     * @param field  unexpected field
+     * @param jsonPath  unexpected field
      * @param actual actual result
      * @return result of comparison
      */
-    public JSONCompareResult unexpected(String field, Object actual) {
-        if (isFilter(field, ignorePathList)) {
-            return this;
-        }
-        fieldUnexpected.add(new FieldComparisonFailure(field, null, actual));
-        fail(formatUnexpected(field, actual));
+    public JSONCompareResult unexpected(String jsonPath, Object actual) {
+        extraPathInfos.add(new FieldComparisonFailure(jsonPath, null, actual));
+        fail(formatUnexpected(jsonPath, actual));
         return this;
     }
 
-    private String formatUnexpected(String field, Object actual) {
-        return field
+    private String formatUnexpected(String jsonPath, Object actual) {
+        return jsonPath
                 + "\nUnexpected: "
                 + describe(actual)
                 + "\n";
@@ -238,10 +249,6 @@ public class JSONCompareResult {
         } else {
             return value.toString();
         }
-    }
-
-    public boolean isFilter(String path, List<String> ignorePathList) {
-        return ignorePathList.contains(path);
     }
 
     @Override

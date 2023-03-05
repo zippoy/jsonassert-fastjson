@@ -14,12 +14,11 @@
 
 package org.skyscreamer.jsonassert.comparator;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson2.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,8 +30,6 @@ import java.util.TreeSet;
  * Utility class that contains Json manipulation methods.
  */
 public final class JSONCompareUtil {
-    private static Integer INTEGER_ONE = new Integer(1);
-
     private JSONCompareUtil() {
     }
 
@@ -46,11 +43,10 @@ public final class JSONCompareUtil {
      * @throws JSONException JSON parsing error
      */
     public static Map<Object, JSONObject> arrayOfJsonObjectToMap(JSONArray array, String uniqueKey) throws JSONException {
-        Map<Object, JSONObject> valueMap = new HashMap<Object, JSONObject>();
-        for (int i = 0; i < array.size(); ++i) {
-            JSONObject jsonObject = (JSONObject) array.get(i);
-            Object id = jsonObject.get(uniqueKey);
-            valueMap.put(id, jsonObject);
+        Map<Object, JSONObject> valueMap = new HashMap(array.size());
+        for (Object obj : array) {
+            JSONObject jsonObject = (JSONObject) obj;
+            valueMap.put(jsonObject.get(uniqueKey), jsonObject);
         }
         return valueMap;
     }
@@ -58,21 +54,73 @@ public final class JSONCompareUtil {
     /**
      * Searches for the unique key of the {@code expected} JSON array.
      *
-     * @param expected the array to find the unique key of
+     * @param jsonArray the array to find the unique key of
      * @return the unique key if there's any, otherwise null
      * @throws JSONException JSON parsing error
      */
-    public static String findUniqueKey(JSONArray expected) throws JSONException {
+    public static String findUniqueKey(JSONArray jsonArray) throws JSONException {
         // Find a unique key for the object (id, name, whatever)
-        JSONObject o = (JSONObject) expected.get(0); // There's at least one at this point
-        for (String candidate : getKeys(o)) {
-            if (isUsableAsUniqueKey(candidate, expected)) {
+        JSONObject obj = (JSONObject) jsonArray.get(0); // There's at least one at this point
+        for (String candidate : getKeys(obj)) {
+            if (isUsableAsUniqueKey(candidate, jsonArray)) {
                 return candidate;
             }
         }
         // No usable unique key :-(
         return null;
     }
+
+
+    /**
+     * Searches for the unique key of the {@code expected} JSON array.
+     *
+     * @param jsonArray the array to find the unique key of
+     * @param prefix    {@code jsonArray}的父节点jsonPath
+     * @param configUniqueKeys 配置的唯一id的jsonPath集合
+     * @return the unique key if there's any, otherwise null
+     * @throws JSONException JSON parsing error
+     */
+    public static String findUniqueKey(JSONArray jsonArray, String prefix, Map<String, Set<String>> configUniqueKeys) throws JSONException {
+        if (configUniqueKeys == null || configUniqueKeys.isEmpty()) {
+            return findUniqueKey(jsonArray);
+        }
+        // Find a unique key for the object (id, name, whatever)
+        JSONObject obj = (JSONObject) jsonArray.get(0); // There's at least one at this point
+        Set<String> keys = getKeys(obj);
+
+        // 取配置的key
+        Set<String> maybeKeys = new HashSet<>(keys);
+        maybeKeys.retainAll(configUniqueKeys.keySet());
+        if (maybeKeys.size() > 0) {
+            for (String maybeKey : maybeKeys) {
+                if (configUniqueKeys.get(maybeKey).contains(prefix)) {
+                    return maybeKey;
+                }
+            }
+        }
+
+        // 最可能的uniqueKey集合
+        List<String> mostMaybeKeys = new ArrayList();
+        List<String> otherKeys = new ArrayList();
+        for (String key : keys) {
+            if (key.matches("^.*(?i)(id|key)$")) {
+                mostMaybeKeys.add(key);
+            } else {
+                maybeKeys.add(key);
+            }
+        }
+        mostMaybeKeys.addAll(otherKeys);
+
+        for (String candidate : mostMaybeKeys) {
+            if (isUsableAsUniqueKey(candidate, jsonArray)) {
+                return candidate;
+            }
+        }
+
+        // No usable unique key :-(
+        return null;
+    }
+
 
     /**
      * <p>Looks to see if candidate field is a possible unique key across a array of objects.
@@ -90,39 +138,38 @@ public final class JSONCompareUtil {
      * @throws JSONException JSON parsing error
      */
     public static boolean isUsableAsUniqueKey(String candidate, JSONArray array) throws JSONException {
-        Set<Object> seenValues = new HashSet();
-        for (int i = 0; i < array.size(); i++) {
-            Object item = array.get(i);
-            if (item instanceof JSONObject) {
-                JSONObject o = (JSONObject) item;
-                if (o.containsKey(candidate)) {
-                    Object value = o.get(candidate);
-                    if (isSimpleValue(value) && !seenValues.contains(value)) {
-                        seenValues.add(value);
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
+        Set<Object> seenValues = new HashSet(array.size());
+        for (Object item : array) {
+            if (!(item instanceof JSONObject)) {
+                return false;
+            }
+
+            JSONObject o = (JSONObject) item;
+            if (!o.containsKey(candidate)) {
+                return false;
+            }
+
+            Object value = o.get(candidate);
+            if (isSimpleValue(value) && !seenValues.contains(value)) {
+                seenValues.add(value);
             } else {
                 return false;
             }
         }
-        return true;
+        return seenValues.size() == array.size();
     }
 
     /**
      * Converts the given {@link JSONArray} to a list of {@link Object}s.
      *
-     * @param expected the JSON array to convert
+     * @param jsonArray the JSON array to convert
      * @return the list of objects from the {@code expected} array
      * @throws JSONException JSON parsing error
      */
-    public static List<Object> jsonArrayToList(JSONArray expected) throws JSONException {
-        List<Object> jsonObjects = new ArrayList<Object>(expected.size());
-        for (int i = 0; i < expected.size(); ++i) {
-            jsonObjects.add(getObjectOrNull(expected, i));
+    public static List<Object> jsonArrayToList(JSONArray jsonArray) throws JSONException {
+        List<Object> jsonObjects = new ArrayList(jsonArray.size());
+        for (int i = 0; i < jsonArray.size(); ++i) {
+            jsonObjects.add(getObjectOrNull(jsonArray, i));
         }
         return jsonObjects;
     }
@@ -131,12 +178,12 @@ public final class JSONCompareUtil {
      * Returns the value present in the given index position. If null value is present, it will return null
      *
      * @param jsonArray the JSON array to get value from
-     * @param index index of object to retrieve
+     * @param index     index of object to retrieve
      * @return value at the given index position
      * @throws JSONException JSON parsing error
      */
     public static Object getObjectOrNull(JSONArray jsonArray, int index) throws JSONException {
-        return jsonArray.size() < index ? null : jsonArray.get(index);
+        return jsonArray.size() <= index ? null : jsonArray.get(index);
     }
 
     /**
@@ -148,8 +195,8 @@ public final class JSONCompareUtil {
      * @see #isSimpleValue(Object)
      */
     public static boolean allSimpleValues(JSONArray array) throws JSONException {
-        for (int i = 0; i < array.size(); ++i) {
-            if (array.size() < i && !isSimpleValue(array.get(i))) {
+        for (Object obj : array) {
+            if (!isSimpleValue(obj)) {
                 return false;
             }
         }
@@ -205,39 +252,57 @@ public final class JSONCompareUtil {
      * @return the set of keys
      */
     public static Set<String> getKeys(JSONObject jsonObject) {
-        Set<String> keys = new TreeSet<String>(jsonObject.keySet());
-        return keys;
+        return new TreeSet(jsonObject.keySet());
     }
 
     public static String qualify(String prefix, String key) {
         return "".equals(prefix) ? key : prefix + "." + key;
     }
 
+//    public static String qualify(String prefix, Object value) {
+//        return "".equals(prefix) ? key : prefix + "." + key;
+//    }
+
     public static String qualify(String prefix, String key, String extraRoot) {
         return "".equals(prefix) ? key : prefix + "." + key + "#" + extraRoot;
     }
 
-    public static String formatUniqueKey(String key, String uniqueKey, Object value) {
-        return key + "[" + uniqueKey + "=" + value + "]";
+    public static String formatUniqueKey(String prefix, String uniqueKey, Object value) {
+        if (value instanceof Number) {
+            return prefix + "[?(@." + uniqueKey + "==" + value + ")]";
+        } else {
+            return prefix + "[?(@." + uniqueKey + "=='" + value + "')]";
+        }
     }
 
     /**
      * Creates a cardinality map from {@code coll}.
      *
-     * @param coll the collection of items to convert
+     * @param list the collection of items to convert
      * @param <T>  the type of elements in the input collection
-     * @return the cardinality map
+     * @return key -> item,  value -> item's index list
      */
-    public static <T> Map<T, Integer> getCardinalityMap(final Collection<T> coll) {
-        Map count = new HashMap<T, Integer>();
-        for (T item : coll) {
-            Integer c = (Integer) (count.get(item));
-            if (c == null) {
-                count.put(item, INTEGER_ONE);
-            } else {
-                count.put(item, new Integer(c.intValue() + 1));
-            }
+    public static <T> Map<T, List<Integer>> getJSONArrayIndexGroup(final List<T> list) {
+        Map<T, List<Integer>> count = new HashMap();
+        for (int i = 0; i < list.size(); i++) {
+            count.computeIfAbsent(list.get(i), k -> new ArrayList<>()).add(i);
         }
         return count;
     }
+
+    /**
+     * 得到JSONArray中某个值的下标
+     * @param jsonArray
+     * @param value
+     * @return
+     */
+    public static int getIndexInJSONArray(JSONArray jsonArray, Object value) {
+        for (int i = 0; i < jsonArray.size(); i++) {
+            if(jsonArray.get(i).equals(value)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 }

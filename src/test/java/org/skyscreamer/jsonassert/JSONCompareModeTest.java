@@ -10,9 +10,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert;
+
+import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -22,52 +24,50 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT_ORDER;
 
-import org.junit.Test;
-
 /**
  * Unit tests for {@link JSONCompareMode}
  */
 public class JSONCompareModeTest {
     @Test
     public void testWithStrictOrdering() {
-        assertTrue(LENIENT.withStrictOrdering(true).hasStrictOrder());
+        assertTrue(LENIENT.withStrictOrdering(true).isStrictOrder());
         assertTrue(LENIENT.withStrictOrdering(true).isExtensible());
-        assertTrue(NON_EXTENSIBLE.withStrictOrdering(true).hasStrictOrder());
+        assertTrue(NON_EXTENSIBLE.withStrictOrdering(true).isStrictOrder());
         assertFalse(NON_EXTENSIBLE.withStrictOrdering(true).isExtensible());
-        
+
         assertEquals(STRICT, STRICT.withStrictOrdering(true));
         assertEquals(STRICT_ORDER, STRICT_ORDER.withStrictOrdering(true));
     }
-    
+
     @Test
     public void testWithoutStrictOrdering() {
-        assertFalse(STRICT_ORDER.withStrictOrdering(false).hasStrictOrder());
+        assertFalse(STRICT_ORDER.withStrictOrdering(false).isStrictOrder());
         assertTrue(STRICT_ORDER.withStrictOrdering(false).isExtensible());
-        assertFalse(STRICT.withStrictOrdering(false).hasStrictOrder());
+        assertFalse(STRICT.withStrictOrdering(false).isStrictOrder());
         assertFalse(STRICT.withStrictOrdering(false).isExtensible());
-        
+
         assertEquals(LENIENT, LENIENT.withStrictOrdering(false));
         assertEquals(NON_EXTENSIBLE, NON_EXTENSIBLE.withStrictOrdering(false));
     }
-    
+
     @Test
     public void testWithExtensibility() {
         assertTrue(NON_EXTENSIBLE.withExtensible(true).isExtensible());
-        assertFalse(NON_EXTENSIBLE.withExtensible(true).hasStrictOrder());
+        assertFalse(NON_EXTENSIBLE.withExtensible(true).isStrictOrder());
         assertTrue(STRICT.withExtensible(true).isExtensible());
-        assertTrue(STRICT.withExtensible(true).hasStrictOrder());
-        
+        assertTrue(STRICT.withExtensible(true).isStrictOrder());
+
         assertEquals(LENIENT, LENIENT.withExtensible(true));
         assertEquals(STRICT_ORDER, STRICT_ORDER.withExtensible(true));
     }
-    
+
     @Test
     public void testWithoutExtensibility() {
         assertFalse(STRICT_ORDER.withExtensible(false).isExtensible());
-        assertTrue(STRICT_ORDER.withExtensible(false).hasStrictOrder());
+        assertTrue(STRICT_ORDER.withExtensible(false).isStrictOrder());
         assertFalse(LENIENT.withExtensible(false).isExtensible());
-        assertFalse(LENIENT.withExtensible(false).hasStrictOrder());
-        
+        assertFalse(LENIENT.withExtensible(false).isStrictOrder());
+
         assertEquals(STRICT, STRICT.withExtensible(false));
         assertEquals(NON_EXTENSIBLE, NON_EXTENSIBLE.withExtensible(false));
     }

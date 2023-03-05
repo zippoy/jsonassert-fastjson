@@ -57,7 +57,7 @@ public class RegularExpressionValueMatcher<T> implements ValueMatcher<T> {
      */
     public RegularExpressionValueMatcher(String pattern) throws IllegalArgumentException {
         try {
-			this.expectedPattern = pattern == null ? null : Pattern.compile(pattern);
+            this.expectedPattern = pattern == null ? null : Pattern.compile(pattern);
         } catch (PatternSyntaxException e) {
             throw new IllegalArgumentException("Constant expected pattern invalid: " + e.getMessage(), e);
         }

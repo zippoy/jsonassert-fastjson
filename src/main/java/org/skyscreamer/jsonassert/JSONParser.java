@@ -14,12 +14,10 @@
 
 package org.skyscreamer.jsonassert;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONAware;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson2.JSONObject;
 
 /**
  * Simple JSON parsing utility.
@@ -41,34 +39,26 @@ public class JSONParser {
      * @return JSONObject or JSONArray
      * @throws JSONException JSON parsing error
      */
-    public static Object parseJSON(final String s) throws JSONException {
-        if (s.trim().startsWith("{")) {
-            return parseJSONObject(s);
-        } else if (s.trim().startsWith("[")) {
-            return parseJSONArray(s);
-        } else if (s.trim().startsWith("\"")
-                || s.trim().matches(NUMBER_REGEX)) {
-            return (JSONAware) () -> s;
+    public static Object parseJSON(final String s) {
+        String json = s.trim();
+        if (json.startsWith("\"") || json.matches(NUMBER_REGEX)) {
+            return json;
+        } else {
+            return JSON.parse(s);
         }
-        throw new JSONException("Unparsable JSON string: " + s);
     }
 
-
     public static JSONObject parseJSONObject(final String s) {
-        return JSON.parseObject(s, Feature.CustomMapDeserializer);
+        return JSON.parseObject(s);
     }
 
     public static Object parseJSONArray(final String s) {
-        return JSON.parse(s, Feature.CustomMapDeserializer);
+        return JSON.parse(s);
     }
-
 
     public static void main(String[] args) {
         String json = "{{\"customerName\":\"何功武\"}:{\"customerName\":\"刘振华\"}}";
-
-
         Object obj = JSONParser.parseJSON(json);
-
         System.out.println(obj);
     }
 

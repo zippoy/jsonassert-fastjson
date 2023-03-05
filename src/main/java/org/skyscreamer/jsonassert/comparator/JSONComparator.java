@@ -14,12 +14,11 @@
 
 package org.skyscreamer.jsonassert.comparator;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson2.JSONObject;
+import org.skyscreamer.jsonassert.JSONCompareConfig;
 import org.skyscreamer.jsonassert.JSONCompareResult;
-
-import java.util.List;
 
 /**
  * Interface for comparison handler.
@@ -29,17 +28,12 @@ import java.util.List;
  */
 public interface JSONComparator {
 
-    /**
-     * set need ignore path's list
-     *
-     * @param ignorePathList
-     */
-    //void setIgnorePathList(List<String> ignorePathList);
+    String SPECIAL_STRING_PATH_SEPARATE = ".#";
 
     /**
      * @return
      */
-    List<String> getIgnorePathList();
+    JSONCompareConfig getJSONCompareConfig();
 
     /**
      * Compares two {@link JSONObject}s and returns the result of the comparison in a {@link JSONCompareResult} object.
@@ -49,7 +43,7 @@ public interface JSONComparator {
      * @return the result of the comparison
      * @throws JSONException JSON parsing error
      */
-    JSONCompareResult compareJSON(JSONObject expected, JSONObject actual) throws JSONException;
+    JSONCompareResult compareJSONObject(JSONObject expected, JSONObject actual) throws JSONException;
 
     /**
      * Compares two {@link JSONArray}s and returns the result of the comparison in a {@link JSONCompareResult} object.
@@ -59,7 +53,7 @@ public interface JSONComparator {
      * @return the result of the comparison
      * @throws JSONException JSON parsing error
      */
-    JSONCompareResult compareJSON(JSONArray expected, JSONArray actual) throws JSONException;
+    JSONCompareResult compareJSONArray(JSONArray expected, JSONArray actual) throws JSONException;
 
     /**
      * Compares two {@link JSONObject}s on the provided path represented by {@code prefix} and
@@ -71,19 +65,7 @@ public interface JSONComparator {
      * @param result   stores the actual state of the comparison result
      * @throws JSONException JSON parsing error
      */
-    void compareJSON(String prefix, JSONObject expected, JSONObject actual, JSONCompareResult result) throws JSONException;
-
-    /**
-     * Compares two {@link Object}s on the provided path represented by {@code prefix} and
-     * updates the result of the comparison in the {@code result} {@link JSONCompareResult} object.
-     *
-     * @param prefix        the path in the json where the comparison happens
-     * @param expectedValue the expected value
-     * @param actualValue   the actual value
-     * @param result        stores the actual state of the comparison result
-     * @throws JSONException JSON parsing error
-     */
-    void compareValues(String prefix, Object expectedValue, Object actualValue, JSONCompareResult result) throws JSONException;
+    void compareJSONObject(String prefix, JSONObject expected, JSONObject actual, JSONCompareResult result) throws JSONException;
 
     /**
      * Compares two {@link JSONArray}s on the provided path represented by {@code prefix} and
@@ -96,5 +78,17 @@ public interface JSONComparator {
      * @throws JSONException JSON parsing error
      */
     void compareJSONArray(String prefix, JSONArray expected, JSONArray actual, JSONCompareResult result) throws JSONException;
+
+    /**
+     * Compares two {@link Object}s on the provided path represented by {@code prefix} and
+     * updates the result of the comparison in the {@code result} {@link JSONCompareResult} object.
+     *
+     * @param jsonPath        the path in the json where the comparison happens
+     * @param expectedValue the expected value
+     * @param actualValue   the actual value
+     * @param result        stores the actual state of the comparison result
+     * @throws JSONException JSON parsing error
+     */
+    void compareValues(String jsonPath, Object expectedValue, Object actualValue, JSONCompareResult result) throws JSONException;
 
 }

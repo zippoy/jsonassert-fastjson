@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.skyscreamer.jsonassert;
 
@@ -43,53 +43,64 @@ package org.skyscreamer.jsonassert;
  * <p>Then the following will fail strict ordering, but will otherwise pass:</p>
  *
  * <code>{id:1,friends:[{id:<b>3</b>},{id:<b>2</b>}]}</code>
- *
  */
 public enum JSONCompareMode {
     /**
      * Strict checking.  Not extensible, and strict array ordering.
+     * 严格校验。不可扩展，严格的数组排序
      */
     STRICT(false, true),
     /**
      * Lenient checking.  Extensible, and non-strict array ordering.
+     * 宽松校验。可扩展，不严格的数组排序
      */
     LENIENT(true, false),
     /**
      * Non-extensible checking.  Not extensible, and non-strict array ordering.
+     * 不可扩展的检查。不可扩展，不严格的数组排序
      */
     NON_EXTENSIBLE(false, false),
     /**
      * Strict order checking.  Extensible, and strict array ordering.
+     * 严格的排序检查。可扩展，严格的数组排序
      */
     STRICT_ORDER(true, true);
 
-    private final boolean _extensible;
-    private final boolean _strictOrder;
+    /**
+     * 可扩展，多余字段是否diff出来
+     */
+    private final boolean extensible;
+    /**
+     * 严格顺序
+     */
+    private final boolean strictOrder;
 
     JSONCompareMode(boolean extensible, boolean strictOrder) {
-        _extensible = extensible;
-        _strictOrder = strictOrder;
+        this.extensible = extensible;
+        this.strictOrder = strictOrder;
     }
 
     /**
      * Is extensible
+     *
      * @return True if results can be extended from what's expected, otherwise false.
      */
     public boolean isExtensible() {
-        return _extensible;
+        return extensible;
     }
 
     /**
      * Strict order required
+     *
      * @return True if results require strict array ordering, otherwise false.
      */
-    public boolean hasStrictOrder() {
-        return _strictOrder;
+    public boolean isStrictOrder() {
+        return strictOrder;
     }
-    
+
     /**
      * Get the equivalent {@code JSONCompareMode} with or without strict ordering.
-     * 
+     *
      * @param strictOrdering if true, requires strict ordering of array elements
      * @return the equivalent {@code JSONCompareMode}
      */
@@ -103,15 +114,15 @@ public enum JSONCompareMode {
 
     /**
      * Get the equivalent {@code JSONCompareMode} with or without extensibility.
-     * 
+     *
      * @param extensible if true, allows keys in actual that don't appear in expected
      * @return the equivalent {@code JSONCompareMode}
      */
     public JSONCompareMode withExtensible(boolean extensible) {
         if (extensible) {
-            return hasStrictOrder() ? STRICT_ORDER : LENIENT;
+            return isStrictOrder() ? STRICT_ORDER : LENIENT;
         } else {
-            return hasStrictOrder() ? STRICT : NON_EXTENSIBLE;
+            return isStrictOrder() ? STRICT : NON_EXTENSIBLE;
         }
     }
 }
