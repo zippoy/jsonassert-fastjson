@@ -65,10 +65,7 @@ public class JSONParser {
 
     public static void main(String[] args) {
         String json = "{{\"customerName\":\"何功武\"}:{\"customerName\":\"刘振华\"}}";
-
-
         Object obj = JSONParser.parseJSON(json);
-
         System.out.println(obj);
     }
 

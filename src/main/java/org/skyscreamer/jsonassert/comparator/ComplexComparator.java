@@ -24,8 +24,6 @@ import java.util.regex.Pattern;
  */
 public class ComplexComparator extends DefaultComparator {
 
-
-
     /**
      * whether to enable diff of JSON that is string, is not a json object
      */

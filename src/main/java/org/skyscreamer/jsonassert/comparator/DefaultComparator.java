@@ -38,13 +38,13 @@ public class DefaultComparator extends AbstractComparator {
     /**
      *
      */
-    private JSONCompareConfig jsonCompareConfig;
+    private JSONCompareConfig config;
 
     public DefaultComparator(JSONCompareMode mode) {
         this(mode, EMPTY_CONFIG);
     }
 
-    public DefaultComparator(JSONCompareMode mode, JSONCompareConfig jsonCompareConfig) {
+    public DefaultComparator(JSONCompareMode mode, JSONCompareConfig config) {
         if (null == mode) {
             throw new IllegalArgumentException("JSONCompareMode is null");
         }
@@ -52,15 +52,15 @@ public class DefaultComparator extends AbstractComparator {
 //            // todo
 //        }
         this.mode = mode;
-        this.jsonCompareConfig = null == jsonCompareConfig ? EMPTY_CONFIG : jsonCompareConfig;
+        this.config = null == config ? EMPTY_CONFIG : config;
     }
 
     @Override
-    public JSONCompareConfig getJsonCompareConfig() {
-        if (null == jsonCompareConfig) {
-            jsonCompareConfig = EMPTY_CONFIG;
+    public JSONCompareConfig getConfig() {
+        if (null == config) {
+            config = EMPTY_CONFIG;
         }
-        return jsonCompareConfig;
+        return config;
     }
 
     @Override

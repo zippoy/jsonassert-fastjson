@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompare;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONCompareResult;
+import org.skyscreamer.jsonassert.JSONPathJoinner;
 
 /**
  * @author <a href="mailto:aiveeen@gmail.com">Ivan Zaytsev</a>
@@ -34,7 +35,7 @@ public class CustomComparatorTest {
         }
 
         @Override
-        public void compareJSONArray(String prefix, JSONArray expected, JSONArray actual, JSONCompareResult result) throws JSONException {
+        public void compareJSONArray(JSONPathJoinner prefix, JSONArray expected, JSONArray actual, JSONCompareResult result) throws JSONException {
             compareJSONArrayOfJsonObjects(prefix, expected, actual, result);
         }
     }

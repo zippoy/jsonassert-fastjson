@@ -36,8 +36,8 @@ public final class JSONCompare {
         return new DefaultComparator(mode);
     }
 
-    private static JSONComparator getComparatorForMode(JSONCompareMode mode, JSONCompareConfig jsonCompareConfig) {
-        return new DefaultComparator(mode, jsonCompareConfig);
+    private static JSONComparator getComparatorForMode(JSONCompareMode mode, JSONCompareConfig config) {
+        return new DefaultComparator(mode, config);
     }
 
     /**

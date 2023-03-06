@@ -50,7 +50,7 @@ public abstract class AbstractComparator implements JSONComparator {
      */
     @Override
     public final JSONCompareResult compareJSON(JSONObject expected, JSONObject actual) throws JSONException {
-        JSONCompareResult result = new JSONCompareResult(getJsonCompareConfig());
+        JSONCompareResult result = new JSONCompareResult(getConfig());
         compareJSON(EMPTY_PATH_JOINNER, expected, actual, result);
         return result;
     }
@@ -64,7 +64,7 @@ public abstract class AbstractComparator implements JSONComparator {
      */
     @Override
     public final JSONCompareResult compareJSON(JSONArray expected, JSONArray actual) throws JSONException {
-        JSONCompareResult result = new JSONCompareResult(getJsonCompareConfig());
+        JSONCompareResult result = new JSONCompareResult(getConfig());
         compareJSONArray(EMPTY_PATH_JOINNER, expected, actual, result);
         return result;
     }

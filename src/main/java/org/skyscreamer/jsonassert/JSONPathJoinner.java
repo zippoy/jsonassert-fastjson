@@ -1,10 +1,9 @@
 package org.skyscreamer.jsonassert;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * <br>
@@ -12,14 +11,13 @@ import lombok.Setter;
  * @author zippoy
  * @date 2019-11-01
  */
-@Getter
-@Setter
 @Builder
-@EqualsAndHashCode
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class JSONPathJoinner {
 
-    public static final JSONPathJoinner EMPTY_PATH_JOINNER = JSONPathJoinner.builder().prefix("").current("").suffix("").build();
+    public static final JSONPathJoinner EMPTY_PATH_JOINNER = new JSONPathJoinner("", "", "");
 
     public static final String SPECIAL_STRING_PATH_SEPARATE = ".$";
 
@@ -27,15 +25,17 @@ public class JSONPathJoinner {
     private String current;
     private String suffix;
 
-    private StringBuffer buffer = new StringBuffer();
+    private final StringBuffer buffer = new StringBuffer();
 
 
     public static JSONPathJoinner of(String path) {
-        return JSONPathJoinner.builder().prefix("").current(path).suffix("").build();
+        return new JSONPathJoinner("", path, "");
+        //return JSONPathJoinner.builder().prefix("").current(path).suffix("").build();
     }
 
     public static JSONPathJoinner ofArray(String path, int i) {
-        return JSONPathJoinner.builder().prefix("").current(path + "[" + i + "]").suffix("").build();
+        return new JSONPathJoinner("", path + '[' + i + ']', "");
+        //return JSONPathJoinner.builder().prefix("").current(path + "[" + i + "]").suffix("").build();
     }
 
     public JSONPathJoinner appendArray() {

@@ -47,7 +47,7 @@ public interface JSONComparator {
      *
      * @return
      */
-    JSONCompareConfig getJsonCompareConfig();
+    JSONCompareConfig getConfig();
 
     /**
      * Compares two {@link JSONObject}s and returns the result of the comparison in a {@link JSONCompareResult} object.

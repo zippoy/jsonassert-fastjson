@@ -63,12 +63,12 @@ public enum JSONCompareMode {
      */
     STRICT_ORDER(true, true);
 
-    private final boolean _extensible;
-    private final boolean _strictOrder;
+    private final boolean extensible;
+    private final boolean strictOrder;
 
     JSONCompareMode(boolean extensible, boolean strictOrder) {
-        _extensible = extensible;
-        _strictOrder = strictOrder;
+        this.extensible = extensible;
+        this.strictOrder = strictOrder;
     }
 
     /**
@@ -76,7 +76,7 @@ public enum JSONCompareMode {
      * @return True if results can be extended from what's expected, otherwise false.
      */
     public boolean isExtensible() {
-        return _extensible;
+        return extensible;
     }
 
     /**
@@ -84,12 +84,12 @@ public enum JSONCompareMode {
      * @return True if results require strict array ordering, otherwise false.
      */
     public boolean hasStrictOrder() {
-        return _strictOrder;
+        return strictOrder;
     }
-    
+
     /**
      * Get the equivalent {@code JSONCompareMode} with or without strict ordering.
-     * 
+     *
      * @param strictOrdering if true, requires strict ordering of array elements
      * @return the equivalent {@code JSONCompareMode}
      */
@@ -103,7 +103,7 @@ public enum JSONCompareMode {
 
     /**
      * Get the equivalent {@code JSONCompareMode} with or without extensibility.
-     * 
+     *
      * @param extensible if true, allows keys in actual that don't appear in expected
      * @return the equivalent {@code JSONCompareMode}
      */

@@ -17,6 +17,7 @@ package org.skyscreamer.jsonassert;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +27,7 @@ import static org.skyscreamer.jsonassert.comparator.DefaultComparator.EMPTY_CONF
 /**
  * Bean for holding results from JSONCompare.
  */
-public class JSONCompareResult {
+public class JSONCompareResult implements Serializable {
 
     private boolean success;
     private StringBuilder message;
@@ -34,8 +35,7 @@ public class JSONCompareResult {
     private final List<FieldComparisonFailure> fieldMissing = new ArrayList();
     private final List<FieldComparisonFailure> fieldUnexpected = new ArrayList();
 
-
-    private JSONCompareConfig jsonCompareConfig;
+    private JSONCompareConfig config;
 
     /**
      * Default constructor.
@@ -44,18 +44,18 @@ public class JSONCompareResult {
         this(true, null, EMPTY_CONFIG);
     }
 
-    public JSONCompareResult(JSONCompareConfig jsonCompareConfig) {
-        this(true, null, jsonCompareConfig == null ? EMPTY_CONFIG : jsonCompareConfig);
+    public JSONCompareResult(JSONCompareConfig config) {
+        this(true, null, config == null ? EMPTY_CONFIG : config);
     }
 
     public JSONCompareResult(boolean success, String message) {
         this(success, message, EMPTY_CONFIG);
     }
 
-    public JSONCompareResult(boolean success, String message, JSONCompareConfig jsonCompareConfig) {
+    public JSONCompareResult(boolean success, String message, JSONCompareConfig config) {
         this.success = success;
         this.message = new StringBuilder(message == null ? "" : message);
-        this.jsonCompareConfig = jsonCompareConfig == null ? EMPTY_CONFIG : jsonCompareConfig;
+        this.config = config == null ? EMPTY_CONFIG : config;
     }
 
     /**
@@ -158,7 +158,7 @@ public class JSONCompareResult {
      */
     public JSONCompareResult fail(JSONPathJoinner joinner, Object expected, Object actual) {
         String path = joinner.getPath();
-        if (isFilter(path, jsonCompareConfig.getIgnorePathList())) {
+        if (isFilter(path, config.getIgnorePathList())) {
             return this;
         }
         this.fieldFailures.add(new FieldComparisonFailure(path, expected, actual));
@@ -196,7 +196,7 @@ public class JSONCompareResult {
      */
     public JSONCompareResult missing(JSONPathJoinner joinner, Object expected) {
         String path = joinner.getPath();
-        if (isFilter(path, jsonCompareConfig.getIgnorePathList())) {
+        if (isFilter(path, config.getIgnorePathList())) {
             return this;
         }
         fieldMissing.add(new FieldComparisonFailure(path, expected, null));
@@ -220,7 +220,7 @@ public class JSONCompareResult {
      */
     public JSONCompareResult unexpected(JSONPathJoinner joinner, Object actual) {
         String path = joinner.getPath();
-        if (isFilter(path, jsonCompareConfig.getIgnorePathList())) {
+        if (isFilter(path, config.getIgnorePathList())) {
             return this;
         }
         fieldUnexpected.add(new FieldComparisonFailure(path, null, actual));
