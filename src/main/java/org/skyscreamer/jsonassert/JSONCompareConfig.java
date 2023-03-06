@@ -32,14 +32,14 @@ public class JSONCompareConfig implements Serializable {
      * 必须是标准的JsonPath
      */
     @Builder.Default
-    private Set<String> ignorePaths = Collections.emptySet();
+    private Set<String> needIgnorePaths = Collections.emptySet();
 
     /**
      * 需要忽略顺序的字段
      * 必须是标准的JsonPath
      */
     @Builder.Default
-    private Set<String> ignoreOrderPaths = Collections.emptySet();
+    private Set<String> needIgnoreOrderPaths = Collections.emptySet();
 
     /**
      * 需要忽略字段的某些值
@@ -72,8 +72,8 @@ public class JSONCompareConfig implements Serializable {
         this(compareMode, Collections.emptySet(), Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptySet(), false);
     }
 
-    public JSONCompareConfig(JSONCompareMode compareMode, Set<String> ignorePaths, Set<String> ignoreOrderPaths) {
-        this(compareMode, ignorePaths, ignoreOrderPaths, Collections.emptyMap(), Collections.emptyMap(), Collections.emptySet(), false);
+    public JSONCompareConfig(JSONCompareMode compareMode, Set<String> needIgnorePaths, Set<String> needIgnoreOrderPaths) {
+        this(compareMode, needIgnorePaths, needIgnoreOrderPaths, Collections.emptyMap(), Collections.emptyMap(), Collections.emptySet(), false);
     }
 
     /**

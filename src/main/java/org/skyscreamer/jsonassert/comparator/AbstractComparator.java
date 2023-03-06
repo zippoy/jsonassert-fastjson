@@ -18,6 +18,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONPath;
+import org.skyscreamer.jsonassert.JSONCompareConfig;
 import org.skyscreamer.jsonassert.JSONCompareResult;
 
 import java.util.Collections;
@@ -29,7 +30,6 @@ import java.util.Set;
 import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.arrayOfJsonObjectToMap;
 import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.findUniqueKey;
 import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.formatUniqueKey;
-import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.getKeys;
 import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.isUsableAsUniqueKey;
 import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.qualify;
 
@@ -38,6 +38,16 @@ import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.qualify;
  * interface, to minimize the effort required to implement this interface.
  */
 public abstract class AbstractComparator implements JSONComparator {
+
+    /**
+     *
+     */
+    protected JSONCompareConfig jsonCompareConfig;
+
+    @Override
+    public JSONCompareConfig getJSONCompareConfig() {
+        return jsonCompareConfig;
+    }
 
     /**
      * Compares JSONObject provided to the expected JSONObject, and returns the results of the comparison.
@@ -76,16 +86,16 @@ public abstract class AbstractComparator implements JSONComparator {
      * @param result
      */
     protected void checkJsonObjectKeysActualInExpected(String prefix, JSONObject expected, JSONObject actual, JSONCompareResult result) {
-        Set<String> actualKeys = getKeys(actual);
-        for (String key : actualKeys) {
-            String curPrefix = qualify(prefix, key);
+        for (Map.Entry<String, Object> entry : actual.entrySet()) {
+            boolean multiValue = entry.getValue() instanceof List ? true : false;
+            String curPrefix = qualify(prefix, entry.getKey(), multiValue);
             // 忽略字段
-            if (getJSONCompareConfig().getIgnorePaths().contains(curPrefix)) {
+            if (jsonCompareConfig.getNeedIgnorePaths().contains(curPrefix)) {
                 continue;
             }
-            if (!getJSONCompareConfig().getCompareMode().isExtensible()) {
-                if (!expected.containsKey(key)) {
-                    result.unexpected(qualify(prefix, key), actual.get(key));
+            if (!jsonCompareConfig.getCompareMode().isExtensible()) {
+                if (!expected.containsKey(entry.getKey())) {
+                    result.unexpected(qualify(prefix, entry.getKey(), multiValue), entry.getValue());
                 }
             }
         }
@@ -101,25 +111,24 @@ public abstract class AbstractComparator implements JSONComparator {
      * @throws JSONException
      */
     protected void checkJsonObjectKeysExpectedInActual(String prefix, JSONObject expected, JSONObject actual, JSONCompareResult result) throws JSONException {
-        Set<String> expectedKeys = getKeys(expected);
-        for (String key : expectedKeys) {
-            String curPrefix = qualify(prefix, key);
+        for (Map.Entry<String, Object> entry : expected.entrySet()) {
+            boolean multiValue = entry.getValue() instanceof List ? true : false;
+            String curPrefix = qualify(prefix, entry.getKey(), multiValue);
             // 忽略字段
-            if (getJSONCompareConfig().getIgnorePaths().contains(curPrefix)) {
+            if (jsonCompareConfig.getNeedIgnorePaths().contains(curPrefix)) {
                 continue;
             }
-            Object expectedValue = expected.get(key);
-            if (actual.containsKey(key)) {
-                Object actualValue = actual.get(key);
-                compareValues(curPrefix, expectedValue, actualValue, result);
+            if (actual.containsKey(entry.getKey())) {
+                Object actualValue = actual.get(entry.getKey());
+                compareValues(curPrefix, entry.getValue(), actualValue, result);
             } else {
-                result.missing(curPrefix, expectedValue);
+                result.missing(curPrefix, entry.getValue());
             }
         }
     }
 
     protected void compareJSONArrayOfJsonObjects(String prefix, JSONArray expected, JSONArray actual, JSONCompareResult result) throws JSONException {
-        String uniqueKey = findUniqueKey(expected, prefix, getJSONCompareConfig().buildUniqueKeyMap());
+        String uniqueKey = findUniqueKey(expected, prefix, jsonCompareConfig.buildUniqueKeyMap());
         if (uniqueKey == null || !isUsableAsUniqueKey(uniqueKey, actual)) {
             // An expensive last resort
             recursivelyCompareJSONArray(prefix, expected, actual, result);
@@ -139,7 +148,7 @@ public abstract class AbstractComparator implements JSONComparator {
             compareValues(formatUniqueKey(prefix, uniqueKey, id), expectedValue, actualValue, result);
         }
 
-        if (!getJSONCompareConfig().getCompareMode().isExtensible()) {
+        if (!jsonCompareConfig.getCompareMode().isExtensible()) {
             for (Map.Entry<Object, JSONObject> entry : actualValueMap.entrySet()) {
                 if (!expectedValueMap.containsKey(entry.getKey())) {
                     result.unexpected(formatUniqueKey(prefix, uniqueKey, entry.getKey()), entry.getValue());
@@ -171,7 +180,7 @@ public abstract class AbstractComparator implements JSONComparator {
             }
         }
 
-        if (!getJSONCompareConfig().getCompareMode().isExtensible()) {
+        if (!jsonCompareConfig.getCompareMode().isExtensible()) {
             for (Map.Entry<Object, List<Integer>> entry : actualIndexMap.entrySet()) {
                 if (expectedIndexMap.containsKey(entry.getKey())) {
                     continue;

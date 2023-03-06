@@ -19,11 +19,13 @@ import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -249,14 +251,18 @@ public final class JSONCompareUtil {
      * Collects all keys in {@code jsonObject}.
      *
      * @param jsonObject the {@link JSONObject} to get the keys of
-     * @return the set of keys
+     * @return the set of keys, value: isArray
      */
     public static Set<String> getKeys(JSONObject jsonObject) {
         return new TreeSet(jsonObject.keySet());
     }
 
-    public static String qualify(String prefix, String key) {
-        return "".equals(prefix) ? key : prefix + "." + key;
+    public static String qualify(String prefix, String key, boolean multiValue) {
+        String field = key;
+        if (multiValue) {
+            field += "[*]";
+        }
+        return "".equals(prefix) ? field : prefix + "." + field;
     }
 
 //    public static String qualify(String prefix, Object value) {

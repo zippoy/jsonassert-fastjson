@@ -42,22 +42,12 @@ import static org.skyscreamer.jsonassert.comparator.JSONCompareUtil.allSimpleVal
  */
 public class DefaultComparator extends AbstractComparator {
 
-    /**
-     *
-     */
-    JSONCompareConfig jsonCompareConfig;
-
     public DefaultComparator(JSONCompareMode mode) {
         this.jsonCompareConfig = JSONCompareConfig.builder().compareMode(mode).build();
     }
 
     public DefaultComparator(JSONCompareConfig jsonCompareConfig) {
         this.jsonCompareConfig = jsonCompareConfig;
-    }
-
-    @Override
-    public JSONCompareConfig getJSONCompareConfig() {
-        return jsonCompareConfig;
     }
 
     @Override
@@ -114,7 +104,7 @@ public class DefaultComparator extends AbstractComparator {
         }
 
         if (expectedValue == null && actualValue != null) {
-            if(!getJSONCompareConfig().getCompareMode().isExtensible()) {
+            if(!jsonCompareConfig.getCompareMode().isExtensible()) {
                 result.unexpected(jsonPath, actualValue);
             }
         } else if (expectedValue != null && actualValue == null) {
@@ -132,7 +122,7 @@ public class DefaultComparator extends AbstractComparator {
                 compareJSONObject(jsonPath, new JSONObject((Map) expectedValue), new JSONObject((Map) actualValue), result);
             } else if (expectedValue instanceof Collection) {
                 compareJSONArray(jsonPath, new JSONArray(new ArrayList((Collection) expectedValue)), new JSONArray(new ArrayList((Collection) actualValue)), result);
-            } else if (getJSONCompareConfig().isEnableStrJSONDiff() && (expectedValue instanceof String)) {
+            } else if (jsonCompareConfig.isEnableStrJSONDiff() && (expectedValue instanceof String)) {
                 if (!areNotEquals(expectedValue, actualValue)) {
                     return;
                 }

@@ -17,8 +17,11 @@ package org.skyscreamer.jsonassert;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONPath;
 import org.skyscreamer.jsonassert.comparator.DefaultComparator;
 import org.skyscreamer.jsonassert.comparator.JSONComparator;
+
+import java.util.Set;
 
 /**
  * Provides API to compare two JSON entities.  This is the backend to {@link JSONAssert}, but it can
@@ -65,6 +68,24 @@ public final class JSONCompare {
             expected = JSONParser.parseJSON(actualString);
         }
 
+        // 删除忽略的节点
+        Set<String> ignorePaths = comparator.getJSONCompareConfig().getNeedIgnorePaths();
+        if(ignorePaths != null && !ignorePaths.isEmpty()) {
+            for (String ignorePath : ignorePaths) {
+                JSONPath.remove(expected, ignorePath);
+                JSONPath.remove(actual, ignorePath);
+            }
+        }
+
+        // 需要忽略字段的某些值
+        /*Map<String, List<Object>> needIgnoreValues = comparator.getJSONCompareConfig().getNeedIgnoreValues();
+        if(needIgnoreValues != null && !needIgnoreValues.isEmpty()) {
+            for (Map.Entry<String, List<Object>> entry : needIgnoreValues.entrySet()) {
+                JSONPath.remove(expected, ignorePath);
+                JSONPath.remove(actual, ignorePath);
+            }
+        }*/
+
         if ((expected instanceof JSONObject) && (actual instanceof JSONObject)) {
             return compareJSON((JSONObject) expected, (JSONObject) actual, comparator);
         } else if ((expected instanceof JSONArray) && (actual instanceof JSONArray)) {
@@ -103,8 +124,8 @@ public final class JSONCompare {
     }
 
     /**
-     * Compares {@link JSONAware} provided to the expected {@code JSONString}, checking that the
-     * {@link JSONAware#toJSONString()} are equal.
+     * Compares {@link String} provided to the expected {@code JSONString}, checking that the
+     * {@link String} are equal.
      *
      * @param expected Expected {@code JSONstring}
      * @param actual   {@code JSONstring} to compare
