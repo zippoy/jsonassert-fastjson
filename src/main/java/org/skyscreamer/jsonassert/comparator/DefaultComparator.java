@@ -53,11 +53,11 @@ public class DefaultComparator extends AbstractComparator {
     @Override
     public void compareJSONObject(String prefix, JSONObject expected, JSONObject actual, JSONCompareResult result) throws JSONException {
         // Check that actual contains all the expected values
-        checkJsonObjectKeysExpectedInActual(prefix, expected, actual, result);
+        List<String> actualExistKeys = checkJsonObjectKeysExpectedInActual(prefix, expected, actual, result);
 
         // If strict, check for vice-versa
         if (!jsonCompareConfig.getCompareMode().isExtensible()) {
-            checkJsonObjectKeysActualInExpected(prefix, expected, actual, result);
+            checkJsonObjectKeysActualInExpected(prefix, expected, actual, result, actualExistKeys);
         }
     }
 
@@ -85,7 +85,10 @@ public class DefaultComparator extends AbstractComparator {
             actual = new JSONArray(actual.stream().filter(v -> !needIgnoreValues.contains(v)).collect(Collectors.toList()));
         }
 
-        if (jsonCompareConfig.getCompareMode().isStrictOrder()) {
+        // 是否配置的忽略顺序字段
+        boolean ignoreOrder = jsonCompareConfig.getNeedIgnoreOrderPaths().contains(prefix);
+
+        if (jsonCompareConfig.getCompareMode().isStrictOrder() && !ignoreOrder) {
             compareJSONArrayWithStrictOrder(prefix, expected, actual, result);
         } else if ((!expected.isEmpty() && allSimpleValues(expected)) || (!actual.isEmpty() && allSimpleValues(actual))) {
             compareJSONArrayOfSimpleValues(prefix, expected, actual, result);

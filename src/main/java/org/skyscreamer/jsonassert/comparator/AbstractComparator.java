@@ -21,6 +21,7 @@ import com.alibaba.fastjson2.JSONPath;
 import org.skyscreamer.jsonassert.JSONCompareConfig;
 import org.skyscreamer.jsonassert.JSONCompareResult;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -78,15 +79,19 @@ public abstract class AbstractComparator implements JSONComparator {
     }
 
     /**
-     * 校验actual中存在的字段和expected是否存在diff
+     * 校验actual中存在的字段，expected不存在的字段
      *
      * @param prefix
      * @param expected
      * @param actual
      * @param result
      */
-    protected void checkJsonObjectKeysActualInExpected(String prefix, JSONObject expected, JSONObject actual, JSONCompareResult result) {
+    protected void checkJsonObjectKeysActualInExpected(String prefix, JSONObject expected, JSONObject actual, JSONCompareResult result, List<String> actualExistKeys) {
         for (Map.Entry<String, Object> entry : actual.entrySet()) {
+            if (actualExistKeys.contains(entry.getKey())) {
+                continue;
+            }
+
             boolean multiValue = entry.getValue() instanceof List ? true : false;
             String curPrefix = qualify(prefix, entry.getKey(), multiValue);
             // 忽略字段
@@ -102,15 +107,17 @@ public abstract class AbstractComparator implements JSONComparator {
     }
 
     /**
-     * 校验expected中存在的字段和actual是否存在diff
+     * 校验expected中存在的字段，actual是否存在diff
      *
      * @param prefix
      * @param expected
      * @param actual
      * @param result
      * @throws JSONException
+     * @return actual中在expected中存在的key。若存在改名字段，返回的是改名后的字段名
      */
-    protected void checkJsonObjectKeysExpectedInActual(String prefix, JSONObject expected, JSONObject actual, JSONCompareResult result) throws JSONException {
+    protected List<String> checkJsonObjectKeysExpectedInActual(String prefix, JSONObject expected, JSONObject actual, JSONCompareResult result) throws JSONException {
+        List<String> actualExistKeys = new ArrayList<>();
         for (Map.Entry<String, Object> entry : expected.entrySet()) {
             boolean multiValue = entry.getValue() instanceof List ? true : false;
             String curPrefix = qualify(prefix, entry.getKey(), multiValue);
@@ -118,13 +125,19 @@ public abstract class AbstractComparator implements JSONComparator {
             if (jsonCompareConfig.getNeedIgnorePaths().contains(curPrefix)) {
                 continue;
             }
-            if (actual.containsKey(entry.getKey())) {
-                Object actualValue = actual.get(entry.getKey());
+
+            String renameKey = jsonCompareConfig.getNeedRenamePaths().getOrDefault(prefix, Collections.emptyMap()).getOrDefault(entry.getKey(), entry.getKey());
+            curPrefix = qualify(prefix, renameKey, multiValue);
+
+            if (actual.containsKey(renameKey)) {
+                Object actualValue = actual.get(renameKey);
                 compareValues(curPrefix, entry.getValue(), actualValue, result);
+                actualExistKeys.add(renameKey);
             } else {
                 result.missing(curPrefix, entry.getValue());
             }
         }
+        return actualExistKeys;
     }
 
     protected void compareJSONArrayOfJsonObjects(String prefix, JSONArray expected, JSONArray actual, JSONCompareResult result) throws JSONException {

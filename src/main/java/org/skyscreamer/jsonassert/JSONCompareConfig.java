@@ -1,9 +1,11 @@
 package org.skyscreamer.jsonassert;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
@@ -18,6 +20,7 @@ import java.util.Set;
 @Builder
 @ToString
 @EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class JSONCompareConfig implements Serializable {
 
@@ -42,7 +45,15 @@ public class JSONCompareConfig implements Serializable {
     private Set<String> needIgnoreOrderPaths = Collections.emptySet();
 
     /**
+     * 节点重命名
+     * <需要重命名的节点父节点path，<需要重命名的字段名, 改名>>
+     */
+    @Builder.Default
+    private Map<String, Map<String, String>> needRenamePaths = Collections.emptyMap();
+
+    /**
      * 需要忽略字段的某些值
+     * 只针对多值字段生效
      */
     @Builder.Default
     private Map<String, List<Object>> needIgnoreValues = Collections.emptyMap();
@@ -52,6 +63,7 @@ public class JSONCompareConfig implements Serializable {
      * 字段类型必须是Number、可以转为date的字符串，否则不生效
      * 时间类型精度：毫秒
      */
+    // TODO zippoy
     @Builder.Default
     private Map<String, Long> accuracyError = Collections.emptyMap();
 
@@ -69,11 +81,27 @@ public class JSONCompareConfig implements Serializable {
     private boolean enableStrJSONDiff;
 
     public JSONCompareConfig(JSONCompareMode compareMode) {
-        this(compareMode, Collections.emptySet(), Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), Collections.emptySet(), false);
+        /*
+        lombok的神仙脑回路
+        this()必须添加
+        lombok的@Builder.Default和自定义的构造器同时出现，成员变量的默认值只在@Builder和lombok注解创建的构造器场景生效
+        自定义的构造器创建对象时默认值不生效
+         */
+        this();
+        this.compareMode = compareMode;
     }
 
     public JSONCompareConfig(JSONCompareMode compareMode, Set<String> needIgnorePaths, Set<String> needIgnoreOrderPaths) {
-        this(compareMode, needIgnorePaths, needIgnoreOrderPaths, Collections.emptyMap(), Collections.emptyMap(), Collections.emptySet(), false);
+        /*
+        lombok的神仙脑回路
+        this()必须添加
+        lombok的@Builder.Default和自定义的构造器同时出现，成员变量的默认值只在@Builder和lombok注解创建的构造器场景生效
+        自定义的构造器创建对象时默认值不生效
+         */
+        this();
+        this.compareMode = compareMode;
+        this.needIgnorePaths = needIgnorePaths;
+        this.needIgnoreOrderPaths = needIgnoreOrderPaths;
     }
 
     /**
