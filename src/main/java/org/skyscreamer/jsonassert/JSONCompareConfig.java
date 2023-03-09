@@ -78,14 +78,13 @@ public class JSONCompareConfig implements Serializable {
      * 如果一个字段值是字符串json，是否需要diff
      * whether to enable diff of JSON that is string, is not a json object
      */
-    private boolean enableStrJSONDiff;
+    private Set<String> strJSONDiffPaths = Collections.emptySet();
 
     public JSONCompareConfig(JSONCompareMode compareMode) {
         /*
-        lombok的神仙脑回路
         this()必须添加
-        lombok的@Builder.Default和自定义的构造器同时出现，成员变量的默认值只在@Builder和lombok注解创建的构造器场景生效
-        自定义的构造器创建对象时默认值不生效
+        lombok的神仙脑回路:
+            @Builder.Default和自定义的构造器同时出现, 成员变量的默认值只在@Builder和lombok注解创建的构造器场景生效, 自定义的构造器创建对象时不生效
          */
         this();
         this.compareMode = compareMode;
@@ -93,10 +92,9 @@ public class JSONCompareConfig implements Serializable {
 
     public JSONCompareConfig(JSONCompareMode compareMode, Set<String> needIgnorePaths, Set<String> needIgnoreOrderPaths) {
         /*
-        lombok的神仙脑回路
         this()必须添加
-        lombok的@Builder.Default和自定义的构造器同时出现，成员变量的默认值只在@Builder和lombok注解创建的构造器场景生效
-        自定义的构造器创建对象时默认值不生效
+        lombok的神仙脑回路:
+            @Builder.Default和自定义的构造器同时出现, 成员变量的默认值只在@Builder和lombok注解创建的构造器场景生效, 自定义的构造器创建对象时不生效
          */
         this();
         this.compareMode = compareMode;
