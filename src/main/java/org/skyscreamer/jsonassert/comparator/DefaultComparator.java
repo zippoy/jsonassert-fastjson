@@ -125,18 +125,18 @@ public class DefaultComparator extends AbstractComparator {
                 compareJSONObject(jsonPath, new JSONObject((Map) expectedValue), new JSONObject((Map) actualValue), result);
             } else if (expectedValue instanceof Collection) {
                 compareJSONArray(jsonPath, new JSONArray(new ArrayList((Collection) expectedValue)), new JSONArray(new ArrayList((Collection) actualValue)), result);
-            } else if (jsonCompareConfig.isEnableStrJSONDiff() && (expectedValue instanceof String)) {
-                if (!areNotEquals(expectedValue, actualValue)) {
+            } else if (jsonCompareConfig.getJsonStrDiffPaths().contains(jsonPath) && (expectedValue instanceof String)) {
+                if (!isNotEquals(expectedValue, actualValue)) {
                     return;
                 }
-                if (areJSONStrings((String) expectedValue, (String) actualValue)) {
+                if (isJsonStrings((String) expectedValue, (String) actualValue)) {
                     compareJSONObject(jsonPath + SPECIAL_STRING_PATH_SEPARATE, JSONParser.parseJSONObject((String) expectedValue), JSONParser.parseJSONObject((String) actualValue), result);
-                } else if (areJSONArrayStrings((String) expectedValue, (String) actualValue)) {
+                } else if (isJsonArrayStrings((String) expectedValue, (String) actualValue)) {
                     compareJSONArray(jsonPath + SPECIAL_STRING_PATH_SEPARATE, (JSONArray) JSONParser.parseJSONArray((String) expectedValue), (JSONArray) JSONParser.parseJSONArray((String) actualValue), result);
                 } else {
                     result.fail(jsonPath, expectedValue, actualValue);
                 }
-            } else if (areNotEquals(expectedValue, actualValue)) {
+            } else if (isNotEquals(expectedValue, actualValue)) {
 //                if (isAccuracyError(expectedValue, actualValue, jsonCompareConfig.getAccuracyError().getOrDefault(prefix, 0L))) {
 //                    return;
 //                }
@@ -156,18 +156,16 @@ public class DefaultComparator extends AbstractComparator {
     }
 
 
-    protected boolean areNotEquals(Object expectedValue, Object actualValue) {
+    protected boolean isNotEquals(Object expectedValue, Object actualValue) {
         return !expectedValue.equals(actualValue);
     }
 
-    protected boolean areJSONStrings(String expectedValue, String actualValue) {
-        return expectedValue.startsWith("{") && expectedValue.endsWith("}")
-                && actualValue.startsWith("{") && actualValue.endsWith("}");
+    protected boolean isJsonStrings(String expectedValue, String actualValue) {
+        return expectedValue.startsWith("{") && expectedValue.endsWith("}") && actualValue.startsWith("{") && actualValue.endsWith("}");
     }
 
-    protected boolean areJSONArrayStrings(String expectedValue, String actualValue) {
-        return expectedValue.startsWith("[") && expectedValue.endsWith("]")
-                && actualValue.startsWith("[") && actualValue.endsWith("]");
+    protected boolean isJsonArrayStrings(String expectedValue, String actualValue) {
+        return expectedValue.startsWith("[") && expectedValue.endsWith("]") && actualValue.startsWith("[") && actualValue.endsWith("]");
     }
 
     /**
