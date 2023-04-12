@@ -78,6 +78,7 @@ public class JSONCompareConfig implements Serializable {
      * 如果一个字段值是字符串json，是否需要diff
      * whether to enable diff of JSON that is string, is not a json object
      */
+    @Builder.Default
     private Set<String> jsonStrDiffPaths = Collections.emptySet();
 
     public JSONCompareConfig(JSONCompareMode compareMode) {
